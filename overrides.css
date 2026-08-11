@@ -1,0 +1,143 @@
+/* Fine-tuning added after the original site styles. */
+.photo-frame {
+  filter: none;
+  box-shadow: 18px 20px 0 rgba(216, 250, 98, 0.22);
+}
+
+.recognition {
+  background: #dec6b9;
+}
+
+.awards article {
+  grid-template-columns: 100px 1fr auto 40px;
+  gap: 1.5rem;
+  padding: 1.7rem 0;
+}
+
+.award-org {
+  font-size: 0.76rem;
+  letter-spacing: 0.02em;
+}
+
+.awards h3 {
+  font-size: clamp(1.28rem, 2.1vw, 1.72rem);
+  line-height: 1.35;
+}
+
+.awards h3 + p {
+  font-size: 0.86rem;
+  color: #40322e;
+}
+
+.award-button {
+  border: 1px solid rgba(11, 17, 32, 0.62);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: 800 0.7rem var(--display);
+  padding: 0.52rem 0.72rem;
+  white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.award-button:hover,
+.award-button:focus-visible {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.award-button span { margin-left: 0.45rem; }
+
+.award-media-intro {
+  margin-bottom: 1.2rem;
+}
+
+.award-media-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.award-media-grid a {
+  color: var(--ink);
+  text-decoration: none;
+  display: block;
+}
+
+.award-media-grid figure {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: #e9e4da;
+}
+
+.award-media-grid img {
+  width: 100%;
+  height: 190px;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* 活動照以畫面感呈現；直式獎狀完整保留，避免被裁切。 */
+.award-media-grid figure.photo img {
+  height: 235px;
+  object-fit: cover;
+}
+
+.award-media-grid figure.certificate {
+  background: #fff;
+}
+
+.award-media-grid figure.certificate img {
+  height: 325px;
+  object-fit: contain;
+  padding: 0.45rem;
+}
+
+/* 壓縮各區塊留白，讓主管可更快掃讀完整經歷。 */
+@media (min-width: 801px) {
+  .hero { min-height: 660px; padding-top: 118px; }
+  .hero-visual { min-height: 430px; }
+  .photo-frame { height: 390px; bottom: 54px; }
+  .hero-bottom { bottom: 20px; }
+  .about { padding-top: 92px; padding-bottom: 82px; }
+  .about-main { padding: 2rem 0 2.5rem; }
+  .capabilities { padding-top: 1.55rem; }
+  .work { padding-top: 88px; padding-bottom: 92px; }
+  .recognition { padding-top: 88px; padding-bottom: 94px; }
+  .experience { padding-top: 88px; padding-bottom: 94px; }
+  .contact { padding-top: 92px; min-height: 500px; }
+  .section-head { margin-bottom: 2.75rem; }
+  .project-featured, .project-featured .project-art { min-height: 430px; }
+  .project-half { min-height: 555px; }
+  .project-half .project-art { height: 245px; }
+}
+
+.award-media-grid figcaption {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.7rem 0.75rem;
+}
+
+.award-media-grid small {
+  display: block;
+  font: 500 0.57rem var(--mono);
+  color: var(--orange);
+  margin-top: 0.2rem;
+}
+
+@media (max-width: 800px) {
+  .awards article {
+    grid-template-columns: 46px 1fr auto;
+    gap: 0.7rem;
+    padding: 1.25rem 0;
+  }
+
+  .award-mark { display: none; }
+  .award-button { font-size: 0.63rem; padding: 0.45rem 0.52rem; }
+  .awards h3 { font-size: 1.18rem; }
+  .awards h3 + p { font-size: 0.74rem; }
+  .award-media-grid { grid-template-columns: 1fr; }
+  .award-media-grid figure.photo img { height: 210px; }
+  .award-media-grid figure.certificate img { height: 360px; }
+}
