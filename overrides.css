@@ -16,6 +16,10 @@
 .hero { grid-template-columns: 1.3fr .7fr; }
 .hero h1 { max-width: 1140px; font-size: clamp(2.7rem, 4.2vw, 4.7rem); line-height: 1.1; margin-bottom: 1.55rem; }
 
+/* 核心能力改為更完整的中英說明，維持三欄掃讀的清晰度。 */
+.cap-index { line-height: 1.45; }
+.capabilities h3 { font-size: clamp(1.24rem, 1.5vw, 1.55rem); }
+
 .recognition {
   background: #dec6b9;
 }
