@@ -360,3 +360,110 @@ nav a {
   .awards h3 + p { font-size: 1rem; }
   .award-button { min-height: 48px; }
 }
+
+/* 成果集群牆：以「專案成果」取代逐行清單，讓寬螢幕空間成為佐證的一部分。 */
+.recognition-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.35rem;
+}
+
+.recognition-cluster,
+.recognition-mini {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(11,17,32,.28);
+  background: rgba(255,255,255,.16);
+}
+
+.recognition-cluster {
+  min-height: 570px;
+  display: grid;
+  grid-template-rows: 255px 1fr;
+}
+
+.cluster-visual {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 1px;
+  background: var(--ink);
+}
+
+.cluster-visual img {
+  width: 100%;
+  height: 255px;
+  object-fit: cover;
+  display: block;
+}
+
+.cluster-visual img + img {
+  object-fit: contain;
+  padding: .6rem;
+  background: #f6f3ec;
+}
+
+.recognition-meeting .cluster-visual img:first-child {
+  object-fit: contain;
+  background: #f2efe8;
+  padding: .4rem;
+}
+
+.recognition-meeting .cluster-visual img + img {
+  object-fit: cover;
+  padding: 0;
+}
+
+.cluster-copy { padding: 1.55rem 1.7rem 1.7rem; }
+.cluster-label { color: #8e4235; font: 700 .82rem var(--mono); letter-spacing: .09em; margin-bottom: .68rem; }
+.cluster-copy h3 { font-size: clamp(1.7rem, 2.55vw, 2.45rem); letter-spacing: -.055em; line-height: 1.12; margin: 0 0 .7rem; }
+.cluster-summary { font-size: 1.03rem; line-height: 1.7; color: #3f3d3b; margin-bottom: 1.15rem; }
+
+.award-chips { display: flex; flex-wrap: wrap; gap: .55rem; }
+.award-chips button,
+.recognition-mini button {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 42px;
+  cursor: pointer;
+  border: 1px solid rgba(11,17,32,.72);
+  background: transparent;
+  color: var(--ink);
+  padding: .52rem .68rem;
+  font: 700 .86rem var(--display);
+  text-align: left;
+  transition: background .2s ease, color .2s ease, transform .2s ease;
+}
+
+.award-chips button b { font-size: .78rem; font-weight: 700; }
+.award-chips button span { font-size: .88rem; }
+.award-chips button:hover,
+.award-chips button:focus-visible,
+.recognition-mini button:hover,
+.recognition-mini button:focus-visible { background: var(--ink); color: var(--paper); transform: translateY(-2px); }
+
+.recognition-mini {
+  min-height: 245px;
+  display: grid;
+  grid-template-columns: 42% 58%;
+  align-items: stretch;
+}
+
+.recognition-mini img { width: 100%; height: 100%; object-fit: cover; display: block; background: #f4f1ea; }
+.recognition-creative img { object-fit: contain; padding: .8rem; }
+.recognition-mini > div { padding: 1.45rem 1.35rem; display: flex; flex-direction: column; align-items: flex-start; }
+.recognition-mini p { font: 700 .85rem/1.5 var(--display); color: #65423a; margin-bottom: .45rem; }
+.recognition-mini h3 { font-size: 1.38rem; letter-spacing: -.045em; line-height: 1.25; margin-bottom: 1rem; }
+.recognition-mini button { margin-top: auto; font-size: .9rem; }
+
+@media (max-width: 800px) {
+  .recognition-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .recognition-cluster { min-height: 0; grid-template-rows: 200px auto; }
+  .cluster-visual img { height: 200px; }
+  .cluster-copy { padding: 1.3rem; }
+  .cluster-copy h3 { font-size: 1.72rem; }
+  .cluster-summary { font-size: 1rem; }
+  .award-chips { display: grid; grid-template-columns: 1fr; }
+  .award-chips button { justify-content: space-between; min-height: 46px; }
+  .recognition-mini { min-height: 210px; }
+}
