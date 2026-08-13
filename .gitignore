@@ -6,6 +6,7 @@ Thumbs.db
 *.pdf
 *.pptx
 *.mp4
+!assets/projects/*.mp4
 比賽/
 專案/
 

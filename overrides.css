@@ -206,6 +206,29 @@ nav a, .header-contact { font-size: 0.9rem; }
 .project-ui-shot img { object-fit: contain !important; background: #171f2e; }
 .project-featured .project-ui-shot img { object-fit: contain !important; }
 
+/* 專案閱讀順序：兩個代表作滿版，其餘三項並排比較。 */
+.project-featured-video { grid-column: 1 / -1; }
+.project-featured-video .project-art { min-height: 455px; }
+.project-video-shot video { display: block; width: 100%; height: 100%; object-fit: cover; background: #171f2e; }
+.project-compact-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+.project-compact-row .project-half { min-width: 0; }
+.project-compact-row .project-half .project-content { padding: 1.75rem 1.55rem 2.1rem; }
+.project-compact-row .project-kicker { font-size: .66rem; line-height: 1.45; }
+.project-compact-row .project h3 { font-size: clamp(1.55rem, 2vw, 2.25rem); margin: 1rem 0; }
+.project-compact-row .project-flow { margin: 1rem 0; padding: .58rem 0; }
+.project-compact-row .project-flow p { font-size: .86rem; }
+.project-compact-row .project-flow b { min-width: 2.45rem; font-size: .72rem; }
+.project-compact-row .tags { margin: 1.1rem 0; }
+.project-compact-row .tags span { font-size: .62rem; }
+.project-compact-row .case-button { font-size: .86rem; }
+
+.case-media-grid .case-video { margin: 0; border: 1px solid var(--line); background: #fff; }
+.case-video video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #111827; }
+
+@media (max-width: 1100px) {
+  .project-compact-row { grid-template-columns: 1fr 1fr; }
+}
+
 /* 競賽：行動入口緊貼獎項，讓「獎項 → 實體佐證」成為同一閱讀單位。 */
 .recognition-heading { text-align: right; }
 .section-summary { margin: .8rem 0 0; color: #463731; font-size: 1rem; font-weight: 700; }
@@ -256,6 +279,8 @@ body { font-size: 18px; }
   .hero-bottom { position: static; margin-top: 1.5rem; }
   .project-flow p { font-size: 1rem; }
   .project-half .project-art { height: auto; aspect-ratio: 16 / 9; }
+  .project-featured-video .project-art { min-height: 0; height: auto; aspect-ratio: 16 / 9; }
+  .project-compact-row { grid-template-columns: 1fr; gap: 1rem; }
   .project-evidence > span { left: 1rem; font-size: .72rem; }
   .case-media-grid, .case-grid { grid-template-columns: 1fr; }
   .case-media-grid img { height: auto; max-height: 330px; }
