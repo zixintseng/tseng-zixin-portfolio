@@ -33,6 +33,11 @@ const awardEvidence = {
     title: 'AIGO 淬煉實戰盃 · 佳作',
     intro: '全域意境感知智慧會議秘書系統',
     media: [['assets/awards/aigo-event.jpg', '競賽現場', '點擊放大照片'], ['assets/awards/aigo-certificate.jpg', '佳作獎狀', '點擊放大獎狀']]
+  },
+  'service-innovation': {
+    title: '台灣服務創新獎 · AI 應用獎',
+    intro: '2025 第十屆台灣服務創新獎｜全域意境感知智慧會議秘書系統',
+    media: [['assets/awards/service-innovation-ai.webp', 'AI 應用獎獎座', '點擊放大獎座']]
   }
 };
 

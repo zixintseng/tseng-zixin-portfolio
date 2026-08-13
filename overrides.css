@@ -4,6 +4,14 @@
   box-shadow: 18px 20px 0 rgba(216, 250, 98, 0.22);
 }
 
+/* 首屏保留履歷照主體；畢業照作為不干擾閱讀的學術里程碑。 */
+.hero-milestones { position: absolute; z-index: 1; left: 3%; bottom: 72px; width: 158px; height: 214px; }
+.hero-milestones figure { position: absolute; margin: 0; overflow: hidden; border: 1px solid rgba(244,241,234,.6); background: #1b2435; box-shadow: 8px 9px 0 rgba(216,250,98,.18); }
+.hero-milestones img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.hero-milestones .milestone-degree { width: 104px; height: 139px; left: 0; bottom: 0; transform: rotate(-4deg); }
+.hero-milestones .milestone-ceremony { width: 88px; height: 132px; right: 0; top: 0; transform: rotate(4deg); }
+.hero-milestones p { position: absolute; left: 4px; bottom: -31px; margin: 0; color: #c8d1de; font: 500 .48rem/1.45 var(--mono); letter-spacing: .08em; }
+
 .recognition {
   background: #dec6b9;
 }
@@ -99,6 +107,7 @@
   .hero { min-height: 660px; padding-top: 118px; }
   .hero-visual { min-height: 430px; }
   .photo-frame { height: 390px; bottom: 54px; }
+  .hero-milestones { bottom: 68px; }
   .hero-bottom { bottom: 20px; }
   .about { padding-top: 92px; padding-bottom: 82px; }
   .about-main { padding: 2rem 0 2.5rem; }
@@ -788,4 +797,8 @@ nav a {
 
 @media (max-width: 800px) {
   .experience-proof { font-size: .84rem; }
+}
+
+@media (max-width: 800px) {
+  .hero-milestones { display: none; }
 }
