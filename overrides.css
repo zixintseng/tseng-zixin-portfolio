@@ -13,7 +13,8 @@
 .hero-milestones p { position: absolute; left: 4px; bottom: -31px; margin: 0; color: #c8d1de; font: 500 .48rem/1.45 var(--mono); letter-spacing: .08em; }
 
 /* 較長的首頁主張維持清楚分行，並保留右側人物視覺的呼吸空間。 */
-.hero h1 { max-width: 860px; font-size: clamp(2.7rem, 4.65vw, 5.1rem); line-height: 1.1; margin-bottom: 1.55rem; }
+.hero { grid-template-columns: 1.3fr .7fr; }
+.hero h1 { max-width: 1140px; font-size: clamp(2.7rem, 4.2vw, 4.7rem); line-height: 1.1; margin-bottom: 1.55rem; }
 
 .recognition {
   background: #dec6b9;
