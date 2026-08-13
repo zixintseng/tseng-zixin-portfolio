@@ -201,6 +201,11 @@ nav a, .header-contact { font-size: 0.9rem; }
 .project-half .project-evidence img { object-fit: contain; background: #202838; }
 .project-half .project-content { padding: clamp(1.8rem, 2.3vw, 2.45rem) clamp(1.8rem, 2.7vw, 3rem) 2.35rem; }
 
+/* 真實產品畫面：維持完整介面比例，不裁切關鍵資訊。 */
+.project-ui-shot { background: #171f2e; }
+.project-ui-shot img { object-fit: contain !important; background: #171f2e; }
+.project-featured .project-ui-shot img { object-fit: contain !important; }
+
 /* 競賽：行動入口緊貼獎項，讓「獎項 → 實體佐證」成為同一閱讀單位。 */
 .recognition-heading { text-align: right; }
 .section-summary { margin: .8rem 0 0; color: #463731; font-size: 1rem; font-weight: 700; }
