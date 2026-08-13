@@ -260,7 +260,7 @@ nav a, .header-contact { font-size: 0.9rem; }
 .awards article:hover { padding-left: .85rem; background: rgba(255,255,255,.17); }
 .awards article:hover::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--lime); }
 .award-copy { min-width: 0; }
-.award-org { margin-bottom: .3rem; font-size: .88rem; line-height: 1.45; }
+.award-org { margin-bottom: .1rem; font-size: .88rem; line-height: 1.45; }
 .awards h3 { font-size: clamp(1.42rem, 1.9vw, 1.7rem); line-height: 1.25; margin-bottom: .18rem; }
 .awards h3 + p { font-size: 1rem; line-height: 1.5; margin-bottom: .72rem; }
 .award-button { display: inline-flex; align-items: center; min-height: 42px; border: 0; background: var(--ink); color: var(--paper); box-shadow: inset 4px 0 var(--lime); font-size: .94rem; padding: .62rem .9rem .62rem 1rem; }
@@ -1057,3 +1057,7 @@ nav a {
   .awards.awards-showcase .award-service { grid-column: auto; }
   .awards.awards-showcase .award-card .award-impact { min-height: 0; }
 }
+
+/* 將競賽資訊與獎項之間的分隔線置於兩段文字的視覺中點。 */
+.awards.awards-showcase .award-card-meta { padding-bottom: .55rem; }
+.awards.awards-showcase .award-card .award-copy { padding-top: .45rem; }
