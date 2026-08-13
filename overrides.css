@@ -560,3 +560,140 @@ nav a {
   .award-card-org, .award-card-project { min-height: 0; }
   .awards.awards-grid .award-button { width: 100%; justify-content: center; margin-top: .5rem; font-size: .94rem; }
 }
+
+/* 雙欄成果清單：沿用原本的閱讀階層，只讓兩欄共同使用桌面寬度。 */
+.awards.awards-two-column {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.15rem 1.25rem;
+  border-top: 0;
+}
+
+.awards.awards-two-column article {
+  position: relative;
+  display: grid !important;
+  grid-template-columns: 3.15rem minmax(0, 1fr) 1.7rem !important;
+  align-items: start;
+  gap: 0 1rem !important;
+  min-height: 0 !important;
+  padding: 1.45rem 1.35rem !important;
+  border: 1px solid rgba(11, 17, 32, .34);
+  background: rgba(255, 255, 255, .14);
+  overflow: visible;
+  transition: transform .22s ease, background .22s ease, box-shadow .22s ease;
+}
+
+.awards.awards-two-column article:hover {
+  padding-left: 1.35rem !important;
+  background: rgba(255, 255, 255, .32);
+  box-shadow: 7px 7px 0 rgba(11, 17, 32, .12);
+  transform: translate(-2px, -2px);
+}
+
+.awards.awards-two-column article::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--lime);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform .22s ease;
+}
+
+.awards.awards-two-column article:hover::before { transform: scaleY(1); }
+
+.awards.awards-two-column .award-year,
+.awards.awards-two-column .award-mark,
+.awards.awards-two-column .award-copy,
+.awards.awards-two-column h3,
+.awards.awards-two-column p,
+.awards.awards-two-column .award-button {
+  writing-mode: horizontal-tb !important;
+}
+
+.awards.awards-two-column .award-year {
+  margin: .25rem 0 0;
+  color: #51443f;
+  font: 700 .77rem var(--mono);
+  letter-spacing: .02em;
+}
+
+.awards.awards-two-column .award-copy { min-width: 0; }
+
+.awards.awards-two-column .award-org {
+  margin: 0 2rem .35rem 0;
+  color: #5c4038;
+  font-size: .88rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.awards.awards-two-column h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.42rem, 1.72vw, 1.65rem);
+  letter-spacing: -.05em;
+  line-height: 1.24;
+}
+
+.awards.awards-two-column h3 + p {
+  margin: .28rem 0 0;
+  color: #443a38;
+  font-size: 1rem;
+  line-height: 1.52;
+}
+
+.awards.awards-two-column .award-button {
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: 100%;
+  min-height: 46px;
+  margin-top: .9rem;
+  padding: .68rem .95rem .68rem 1.1rem;
+  justify-content: flex-start !important;
+  align-items: center;
+  gap: .55rem;
+  border: 0;
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: inset 4px 0 var(--lime);
+  font: 800 .9rem var(--display);
+  cursor: pointer;
+}
+
+.awards.awards-two-column .award-button:hover,
+.awards.awards-two-column .award-button:focus-visible {
+  background: #26324a;
+  color: var(--paper);
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.awards.awards-two-column .award-mark {
+  justify-self: end;
+  margin-top: .28rem;
+  color: #51443f;
+  font: 700 .76rem var(--mono);
+}
+
+.awards.awards-two-column article:last-child {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 960px) {
+  .awards.awards-two-column { grid-template-columns: 1fr; gap: .9rem; }
+  .awards.awards-two-column article:last-child { grid-column: auto; }
+}
+
+@media (max-width: 800px) {
+  .awards.awards-two-column article {
+    grid-template-columns: 2.75rem minmax(0, 1fr) !important;
+    padding: 1.25rem 1.1rem !important;
+  }
+  .awards.awards-two-column .award-mark { display: none; }
+  .awards.awards-two-column .award-org { font-size: .82rem; }
+  .awards.awards-two-column h3 { font-size: 1.4rem; }
+  .awards.awards-two-column h3 + p { font-size: .98rem; }
+  .awards.awards-two-column .award-button { font-size: .88rem; }
+}
