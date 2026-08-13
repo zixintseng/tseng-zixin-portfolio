@@ -19,6 +19,7 @@
 /* 核心能力改為更完整的中英說明，維持三欄掃讀的清晰度。 */
 .cap-index { line-height: 1.45; }
 .capabilities h3 { font-size: clamp(1.24rem, 1.5vw, 1.55rem); }
+.about h2 span { color: var(--orange); }
 
 .recognition {
   background: #dec6b9;
