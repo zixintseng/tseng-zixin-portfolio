@@ -12,7 +12,7 @@ const projectData = {
     title: 'AI 五力智慧幼兒園',
     description: '以幼兒園真實場景為出發點，將日常影像與親師溝通中的零散資訊，轉化為透明、可追蹤的成長紀錄。此作品獲 2025 資訊應用服務創新競賽教育 AI 組第一名、資訊應用組第二名及最佳人氣獎。',
     items: [['問題', '教師紀錄耗時，家長難即時掌握孩子的日常與成長'], ['我做了什麼', '規劃五力指標、影音紀錄、聯絡簿與提醒的整合服務'], ['系統產出', '五力成長報表、個人化精華影片與數位聯絡簿']],
-    media: [['video', 'assets/projects/kindergarten-highlight.mp4', '一分鐘精華影片'], ['video', 'assets/projects/kindergarten-contact-book.mp4', '電子聯絡簿展示']]
+    media: [['video', 'assets/projects/kindergarten-highlight-web.mp4', '一分鐘精華影片'], ['video', 'assets/projects/kindergarten-contact-book-web.mp4', '電子聯絡簿展示']]
   },
   commerce: {
     kicker: 'CASE STUDY / CUSTOMER INTELLIGENCE',

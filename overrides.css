@@ -700,6 +700,37 @@ nav a {
   outline-offset: 2px;
 }
 
+.awards.awards-two-column .award-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .65rem;
+  margin-top: .9rem;
+}
+
+.awards.awards-two-column .award-actions .award-button { margin-top: 0; }
+
+.awards.awards-two-column .award-official {
+  display: inline-flex;
+  align-items: center;
+  gap: .36rem;
+  min-height: 46px;
+  padding: .58rem .15rem;
+  color: var(--ink);
+  border-bottom: 1px solid currentColor;
+  font-size: .87rem;
+  font-weight: 800;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.awards.awards-two-column .award-official:hover,
+.awards.awards-two-column .award-official:focus-visible {
+  color: #7a3b2d;
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
 .awards.awards-two-column .award-mark {
   justify-self: end;
   margin-top: .28rem;
@@ -726,7 +757,12 @@ nav a {
   .awards.awards-two-column h3 { font-size: 1.4rem; }
   .awards.awards-two-column h3 + p { font-size: .98rem; }
   .awards.awards-two-column .award-button { font-size: .88rem; }
+  .awards.awards-two-column .award-official { font-size: .84rem; }
 }
+
+/* 獎狀以原始直式比例呈現，不因彈窗格線被裁切。 */
+.award-media-grid figure.certificate img { height: auto; min-height: 325px; max-height: min(62vh, 620px); object-fit: contain; }
+.award-media-grid figure.photo img { object-fit: cover; }
 
 /* 經歷佐證：保留時間軸的閱讀節奏，讓公開活動可快速查核。 */
 .experience-proof {

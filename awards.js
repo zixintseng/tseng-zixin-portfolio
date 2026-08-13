@@ -2,22 +2,22 @@ const awardEvidence = {
   'ict-first': {
     title: '教育 AI 組 · 第一名',
     intro: 'AI 五力智慧幼兒園｜2025 第 30 屆大專校院資訊應用服務創新競賽',
-    media: [['assets/awards/ict-event-01.jpg', '競賽現場', '點擊放大照片'], ['assets/awards/ict-first.jpg', '第一名獎狀', '點擊放大獎狀']]
+    media: [['assets/awards/ict-event-01.jpg', '競賽現場', '點擊放大照片'], ['assets/awards/ict-first-certificate.png', '第一名獎狀', '點擊放大獎狀']]
   },
   'ict-second': {
     title: '資訊應用組 · 第二名',
     intro: 'AI 五力智慧幼兒園｜2025 第 30 屆大專校院資訊應用服務創新競賽',
-    media: [['assets/awards/ict-event-02.jpg', '競賽現場', '點擊放大照片'], ['assets/awards/ict-second.jpg', '第二名獎狀', '點擊放大獎狀']]
+    media: [['assets/awards/ict-event-02.jpg', '競賽現場', '點擊放大照片'], ['assets/awards/ict-second-certificate.png', '第二名獎狀', '點擊放大獎狀']]
   },
   'ict-popularity': {
     title: '最佳人氣獎',
     intro: 'AI 五力智慧幼兒園｜2025 第 30 屆大專校院資訊應用服務創新競賽',
-    media: [['assets/awards/ict-event-01.jpg', '競賽現場', '點擊放大照片'], ['assets/awards/ict-popularity.jpg', '最佳人氣獎獎狀', '點擊放大獎狀']]
+    media: [['assets/awards/ict-popularity-certificate.png', '最佳人氣獎獎狀', '點擊放大獎狀']]
   },
   'ict-excellent': {
     title: '產學合作組 · 佳作',
     intro: '基於 LLM、RAG 與 AI Agent 的會議機器人',
-    media: [['assets/awards/aigo-event.jpg', '專案成果發表', '點擊放大照片'], ['assets/awards/ict-excellent.jpg', '佳作獎狀', '點擊放大獎狀']]
+    media: [['assets/awards/ict-excellent-certificate.png', '佳作獎狀', '點擊放大獎狀']]
   },
   creative: {
     title: '大專資訊教育組 · 特優',
@@ -27,7 +27,7 @@ const awardEvidence = {
   innovation: {
     title: '智慧創新大賞 · 佳作',
     intro: 'AI 應用類／學生組｜2025 智慧創新大賞',
-    media: [['assets/awards/innovation-event.jpg', '競賽成果紀錄', '點擊放大照片']]
+    media: [['assets/awards/innovation-event.jpg', '智慧創新大賞佳作獎狀', '點擊放大獎狀']]
   },
   aigo: {
     title: 'AIGO 淬煉實戰盃 · 佳作',
