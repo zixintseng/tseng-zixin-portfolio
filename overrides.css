@@ -172,6 +172,7 @@ nav a, .header-contact { font-size: 0.9rem; }
 .project-evidence { background: #202838; }
 .project-evidence img { display: block; height: 100%; width: 100%; object-fit: cover; object-position: center; opacity: .96; transition: transform .45s ease; }
 .project:hover .project-evidence img { transform: scale(1.025); }
+.project:focus-within .project-evidence img { transform: scale(1.025); }
 .project-evidence::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,17,32,0) 48%, rgba(11,17,32,.72)); pointer-events: none; }
 .project-evidence > span { position: absolute; left: 1.25rem; bottom: 1rem; z-index: 1; color: var(--paper); font: 500 .74rem var(--mono); letter-spacing: .06em; }
 .project-flow { border-top: 1px solid rgba(244,241,234,.24); border-bottom: 1px solid rgba(244,241,234,.24); padding: .72rem 0; margin: 1.25rem 0; }
@@ -193,6 +194,44 @@ nav a, .header-contact { font-size: 0.9rem; }
 .case-grid b { font-size: 0.72rem; }
 .case-grid span { font-size: .9rem; }
 
+/* 專案佐證維持 16:9 原比例；未來替換成介面截圖也不需重做版型。 */
+.project-evidence::after { background: linear-gradient(180deg, rgba(11,17,32,0) 72%, rgba(11,17,32,.6)); }
+.project-half { min-height: 0; display: grid; grid-template-rows: auto 1fr; }
+.project-half .project-art { height: auto; min-height: 0; aspect-ratio: 16 / 9; }
+.project-half .project-evidence img { object-fit: contain; background: #202838; }
+.project-half .project-content { padding: clamp(1.8rem, 2.3vw, 2.45rem) clamp(1.8rem, 2.7vw, 3rem) 2.35rem; }
+
+/* 競賽：行動入口緊貼獎項，讓「獎項 → 實體佐證」成為同一閱讀單位。 */
+.recognition-heading { text-align: right; }
+.section-summary { margin: .8rem 0 0; color: #463731; font-size: 1rem; font-weight: 700; }
+.awards article { grid-template-columns: 76px minmax(0, 1fr) 34px; gap: 1.4rem; padding: 1.35rem 0; position: relative; }
+.awards article:hover { padding-left: .85rem; background: rgba(255,255,255,.17); }
+.awards article:hover::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--lime); }
+.award-copy { min-width: 0; }
+.award-org { margin-bottom: .3rem; font-size: .88rem; line-height: 1.45; }
+.awards h3 { font-size: clamp(1.42rem, 1.9vw, 1.7rem); line-height: 1.25; margin-bottom: .18rem; }
+.awards h3 + p { font-size: 1rem; line-height: 1.5; margin-bottom: .72rem; }
+.award-button { display: inline-flex; align-items: center; min-height: 42px; border: 0; background: var(--ink); color: var(--paper); box-shadow: inset 4px 0 var(--lime); font-size: .94rem; padding: .62rem .9rem .62rem 1rem; }
+.award-button:hover, .award-button:focus-visible { background: #26324a; color: var(--paper); outline: 2px solid var(--ink); outline-offset: 2px; }
+.award-mark { align-self: center; font-size: .75rem; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--lime); outline-offset: 4px; }
+
+/* 全站文字：一般內容以 16–18px 為主，僅裝飾性序號保留較小。 */
+body { font-size: 18px; }
+.hero-intro { font-size: 1.18rem; }
+.hero-domains span { font-size: .8rem; }
+.hero-domains b { font-size: 1rem; }
+.capabilities p, .about-body p { font-size: 1.06rem; line-height: 1.78; }
+.project-kicker { font-size: .84rem; }
+.project-flow p { font-size: 1.06rem; line-height: 1.65; }
+.project-flow b { font-size: .86rem; min-width: 3.25rem; }
+.tags span { font-size: .81rem; }
+.case-button { font-size: 1rem; }
+.timeline small { font-size: 1rem; }
+.toolkit-note p { font-size: 1rem; }
+.award-media-grid figcaption, .case-media-grid figcaption { font-size: .94rem; }
+.award-media-grid small, .case-media-grid small { font-size: .72rem; }
+
 @media (min-width: 801px) {
   .hero { min-height: 710px; }
   .hero-copy { padding-bottom: 22px; }
@@ -201,14 +240,33 @@ nav a, .header-contact { font-size: 0.9rem; }
 }
 
 @media (max-width: 800px) {
-  .eyebrow, .section-label { font-size: .72rem; }
-  .hero-intro { font-size: .96rem; }
+  body { font-size: 16px; }
+  .eyebrow, .section-label { font-size: .78rem; }
+  .hero-intro { font-size: 1.05rem; }
   .hero-domains { grid-template-columns: 1fr; margin-top: 1.25rem; }
   .hero-domains a, .hero-domains a + a { border-right: 0; border-bottom: 1px solid rgba(244,241,234,.18); padding: .55rem 0; }
   .hero-domains a:last-child { border-bottom: 0; }
   .hero-domains b { font-size: .82rem; }
-  .project-flow p { font-size: .88rem; }
-  .project-evidence > span { left: 1rem; font-size: .64rem; }
+  .hero { min-height: auto; padding-bottom: 2rem; }
+  .hero-bottom { position: static; margin-top: 1.5rem; }
+  .project-flow p { font-size: 1rem; }
+  .project-half .project-art { height: auto; aspect-ratio: 16 / 9; }
+  .project-evidence > span { left: 1rem; font-size: .72rem; }
   .case-media-grid, .case-grid { grid-template-columns: 1fr; }
   .case-media-grid img { height: auto; max-height: 330px; }
+  .recognition .section-head { display: block; }
+  .recognition-heading { text-align: left; margin-top: 1.5rem; }
+  .section-summary { font-size: .92rem; }
+  .awards article { grid-template-columns: 48px minmax(0, 1fr); gap: .8rem; padding: 1.25rem 0; }
+  .award-mark { display: none; }
+  .award-org { font-size: .8rem; }
+  .awards h3 { font-size: 1.35rem; }
+  .awards h3 + p { font-size: .95rem; }
+  .award-button { width: 100%; justify-content: center; font-size: .92rem; margin-top: .1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .project-evidence img { transition: none; }
 }
