@@ -697,3 +697,29 @@ nav a {
   .awards.awards-two-column h3 + p { font-size: .98rem; }
   .awards.awards-two-column .award-button { font-size: .88rem; }
 }
+
+/* 經歷佐證：保留時間軸的閱讀節奏，讓公開活動可快速查核。 */
+.experience-proof {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  margin-top: .82rem;
+  padding-bottom: .16rem;
+  color: var(--ink);
+  border-bottom: 1px solid currentColor;
+  font-size: .88rem;
+  font-weight: 800;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.experience-proof:hover,
+.experience-proof:focus-visible {
+  color: #7a3b2d;
+  outline: 2px solid var(--orange);
+  outline-offset: 4px;
+}
+
+@media (max-width: 800px) {
+  .experience-proof { font-size: .84rem; }
+}
