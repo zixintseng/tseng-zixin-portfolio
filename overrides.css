@@ -270,3 +270,93 @@ body { font-size: 18px; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .project-evidence img { transition: none; }
 }
+
+/* ================================================================
+   READABILITY CONTROLS — 集中在這裡調整網站的非標題字體大小。
+   若想再放大，直接調整下方 --text-* 數值即可。
+   ================================================================ */
+:root {
+  --text-body: 1.125rem;  /* 一般內文：18px */
+  --text-project: 1.18rem; /* 專案問題／系統／產出：約19px */
+  --text-meta: 0.94rem;  /* 說明、標籤、主辦單位：15px */
+  --text-action: 1.05rem; /* 所有主要按鈕：約17px */
+}
+
+/* 一般閱讀文字：明確提高到管理者掃讀也舒適的尺寸。 */
+.about-body p,
+.capabilities p,
+.timeline small,
+.toolkit-note p,
+.section-note,
+.case-intro,
+.contact-bottom,
+.award-media-grid figcaption,
+.case-media-grid figcaption {
+  font-size: var(--text-body);
+  line-height: 1.78;
+}
+
+/* 專案卡是全站最重要的閱讀區，因此另行再放大一級。 */
+.project-flow p {
+  font-size: var(--text-project);
+  line-height: 1.7;
+  margin: 0.58rem 0;
+}
+
+.project-flow b {
+  font-size: 0.98rem;
+  min-width: 3.65rem;
+}
+
+.project-kicker,
+.project-evidence > span,
+.hero-domains span,
+.award-org,
+.award-year,
+.award-mark,
+.skill-row span,
+.timeline-item > p,
+.proof-bar p,
+.section-label,
+.eyebrow {
+  font-size: var(--text-meta);
+}
+
+.tags span {
+  font-size: 0.9rem;
+  line-height: 1.25;
+  padding: 0.5rem 0.68rem;
+}
+
+.case-button,
+.award-button,
+.text-link,
+.button,
+.header-contact,
+nav a {
+  font-size: var(--text-action);
+}
+
+/* 競賽列：主辦、作品與按鈕不再是輔助小字。 */
+.award-org { line-height: 1.55; }
+.awards h3 + p { font-size: 1.12rem; line-height: 1.55; }
+.award-button { min-height: 48px; padding: 0.72rem 1.05rem 0.72rem 1.16rem; }
+.section-summary { font-size: 1.12rem; }
+
+.hero-intro { font-size: 1.28rem; line-height: 1.75; }
+.hero-domains b { font-size: 1.1rem; line-height: 1.5; }
+.skill-row b { font-size: 1.12rem; }
+
+@media (max-width: 800px) {
+  :root {
+    --text-body: 1rem;       /* 手機內文：16px */
+    --text-project: 1.06rem;/* 手機專案內文：約17px */
+    --text-meta: 0.82rem;   /* 手機輔助資訊：約13px */
+    --text-action: 1rem;    /* 手機按鈕：16px */
+  }
+
+  .hero-intro { font-size: 1.12rem; }
+  .hero-domains b { font-size: 1rem; }
+  .awards h3 + p { font-size: 1rem; }
+  .award-button { min-height: 48px; }
+}
