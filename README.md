@@ -13,4 +13,4 @@
 3. 在 **Build and deployment** 選擇 **Deploy from a branch**，分支選擇 `main`，資料夾選擇 `/(root)`。
 4. 儲存後，GitHub 會提供公開網址。
 
-網站使用新版彩色個人照片 `大頭照新版.JPG`，並將競賽的現場照片與獎狀預覽整理至 `assets/awards/`。原始履歷、證書、簡報與影片已由 `.gitignore` 排除，避免將地址、電話或未經整理的素材公開。
+網站使用新版彩色個人照片 `大頭照新版.JPG`，競賽現場照片與獎狀預覽整理至 `assets/awards/`，經挑選的系統架構與功能佐證置於 `assets/projects/`。原始履歷、證書、簡報與影片已由 `.gitignore` 排除，避免將地址、電話或未經整理的素材公開。

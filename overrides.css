@@ -141,3 +141,74 @@
   .award-media-grid figure.photo img { height: 210px; }
   .award-media-grid figure.certificate img { height: 360px; }
 }
+
+/* 招募者掃讀：避免任何重要內容落在 12px 以下。 */
+nav a, .header-contact { font-size: 0.9rem; }
+.eyebrow, .section-label { font-size: 0.8rem; }
+.hero-intro { font-size: 1.08rem; line-height: 1.78; }
+.hero-intro strong { color: var(--lime); font-weight: 800; }
+.section-note { font-size: 1rem; }
+.project-kicker { font-size: 0.78rem; line-height: 1.6; }
+.project-content > p:not(.project-kicker), .capabilities p, .timeline small { font-size: 0.96rem; }
+.tags span { font-size: 0.74rem; padding: 0.42rem 0.58rem; }
+.case-button { font-size: 0.92rem; }
+.award-org { font-size: 0.84rem; }
+.awards h3 + p { font-size: 0.95rem; }
+.award-button { font-size: 0.8rem; }
+.skill-row span, .timeline-item > p { font-size: 0.72rem; }
+.skill-row b { font-size: 0.95rem; }
+.proof-bar p { font-size: 0.85rem; }
+.cap-index { font-size: 0.72rem; }
+
+/* 首屏直接說明三個專案領域，毋須先滑到作品區。 */
+.hero-domains { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 760px; margin-top: 1.8rem; border-top: 1px solid rgba(244,241,234,.28); }
+.hero-domains a { padding: .8rem .85rem .2rem 0; text-decoration: none; color: var(--paper); border-right: 1px solid rgba(244,241,234,.18); }
+.hero-domains a + a { padding-left: .85rem; }
+.hero-domains a:last-child { border-right: 0; }
+.hero-domains span { display: block; color: var(--lime); font: 500 .68rem var(--mono); letter-spacing: .06em; margin-bottom: .28rem; }
+.hero-domains b { font-size: .84rem; line-height: 1.42; display: block; }
+
+/* 用真實系統圖替代純裝飾圖，建立可驗證的專案第一印象。 */
+.project-evidence { background: #202838; }
+.project-evidence img { display: block; height: 100%; width: 100%; object-fit: cover; object-position: center; opacity: .96; transition: transform .45s ease; }
+.project:hover .project-evidence img { transform: scale(1.025); }
+.project-evidence::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,17,32,0) 48%, rgba(11,17,32,.72)); pointer-events: none; }
+.project-evidence > span { position: absolute; left: 1.25rem; bottom: 1rem; z-index: 1; color: var(--paper); font: 500 .74rem var(--mono); letter-spacing: .06em; }
+.project-flow { border-top: 1px solid rgba(244,241,234,.24); border-bottom: 1px solid rgba(244,241,234,.24); padding: .72rem 0; margin: 1.25rem 0; }
+.project-flow p { margin: .42rem 0; color: #d5dce5; font-size: .93rem; line-height: 1.55; }
+.project-flow b { color: var(--lime); font-size: .78rem; letter-spacing: .04em; display: inline-block; min-width: 2.8rem; }
+.project-featured .project-content { padding-top: 3rem; padding-bottom: 3.2rem; }
+.project-half .project-content { padding-top: 2.2rem; }
+
+/* 案例視窗改為小型 visual case study：佐證優先、文字其次。 */
+.case-modal { width: min(920px, calc(100% - 2rem)); max-height: calc(100vh - 2rem); overflow-y: auto; }
+.case-intro { font-size: 1rem !important; max-width: 720px; }
+.case-media-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.case-media-grid a { color: var(--ink); text-decoration: none; }
+.case-media-grid figure { margin: 0; border: 1px solid var(--line); background: #fff; }
+.case-media-grid img { display: block; width: 100%; height: 220px; object-fit: contain; padding: .35rem; background: #f0ede7; }
+.case-media-grid figcaption { padding: .65rem .75rem; font-size: .88rem; font-weight: 800; }
+.case-media-grid small { display: block; margin-top: .2rem; color: var(--orange); font: 500 .68rem var(--mono); }
+.case-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.case-grid b { font-size: 0.72rem; }
+.case-grid span { font-size: .9rem; }
+
+@media (min-width: 801px) {
+  .hero { min-height: 710px; }
+  .hero-copy { padding-bottom: 22px; }
+  .project-featured, .project-featured .project-art { min-height: 455px; }
+  .project-half { min-height: 0; }
+}
+
+@media (max-width: 800px) {
+  .eyebrow, .section-label { font-size: .72rem; }
+  .hero-intro { font-size: .96rem; }
+  .hero-domains { grid-template-columns: 1fr; margin-top: 1.25rem; }
+  .hero-domains a, .hero-domains a + a { border-right: 0; border-bottom: 1px solid rgba(244,241,234,.18); padding: .55rem 0; }
+  .hero-domains a:last-child { border-bottom: 0; }
+  .hero-domains b { font-size: .82rem; }
+  .project-flow p { font-size: .88rem; }
+  .project-evidence > span { left: 1rem; font-size: .64rem; }
+  .case-media-grid, .case-grid { grid-template-columns: 1fr; }
+  .case-media-grid img { height: auto; max-height: 330px; }
+}
