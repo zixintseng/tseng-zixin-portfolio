@@ -467,3 +467,96 @@ nav a {
   .award-chips button { justify-content: space-between; min-height: 46px; }
   .recognition-mini { min-height: 210px; }
 }
+
+/* 簡潔的獎項卡片牆：保留原本獎項主導的閱讀感，消除寬螢幕留白。 */
+.recognition-grid { display: none; }
+.awards.awards-grid {
+  border-top: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+.awards.awards-grid .award-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 286px;
+  padding: 1.55rem;
+  border: 1px solid rgba(11,17,32,.36);
+  background: rgba(255,255,255,.14);
+  overflow: hidden;
+  transition: transform .22s ease, background .22s ease, box-shadow .22s ease;
+}
+
+.awards.awards-grid .award-card::before {
+  content: "2025";
+  position: absolute;
+  right: 1.15rem;
+  top: .9rem;
+  color: rgba(11,17,32,.36);
+  font: 500 .7rem var(--mono);
+  letter-spacing: .08em;
+}
+
+.awards.awards-grid .award-card:hover {
+  padding-left: 1.55rem;
+  background: rgba(255,255,255,.38);
+  box-shadow: 8px 8px 0 rgba(11,17,32,.13);
+  transform: translate(-3px, -3px);
+}
+
+.award-card-number {
+  margin: 0 0 1.7rem;
+  color: var(--orange);
+  font: 700 .82rem var(--mono);
+  letter-spacing: .08em;
+}
+
+.award-card-org {
+  min-height: 3em;
+  margin: 0 1rem .52rem 0;
+  color: #5e4038;
+  font-size: .89rem;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.awards.awards-grid .award-card h3 {
+  margin: 0 0 .52rem;
+  font-size: clamp(1.32rem, 1.65vw, 1.6rem);
+  letter-spacing: -.05em;
+  line-height: 1.22;
+}
+
+.award-card-project {
+  min-height: 3.15em;
+  margin: 0 0 1.1rem;
+  color: #4e4844;
+  font-size: .99rem;
+  line-height: 1.55;
+}
+
+.awards.awards-grid .award-button {
+  margin-top: auto;
+  min-height: 44px;
+  padding: .62rem .76rem .62rem .92rem;
+  font-size: .88rem;
+}
+
+.awards.awards-grid .award-card-wide { grid-column: span 2; }
+.awards.awards-grid .award-card-wide .award-card-project { min-height: 0; }
+
+@media (max-width: 1280px) {
+  .awards.awards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .awards.awards-grid .award-card-wide { grid-column: auto; }
+}
+
+@media (max-width: 800px) {
+  .awards.awards-grid { grid-template-columns: 1fr; gap: .85rem; }
+  .awards.awards-grid .award-card { min-height: 0; padding: 1.25rem; }
+  .award-card-number { margin-bottom: 1rem; }
+  .award-card-org, .award-card-project { min-height: 0; }
+  .awards.awards-grid .award-button { width: 100%; justify-content: center; margin-top: .5rem; font-size: .94rem; }
+}
