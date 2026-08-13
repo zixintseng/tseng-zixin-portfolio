@@ -21,6 +21,11 @@
 .capabilities h3 { font-size: clamp(1.24rem, 1.5vw, 1.55rem); }
 .about h2 span { color: var(--orange); }
 
+/* 核心能力採單一中文主標，縮短掃讀路徑並消除多餘留白。 */
+.capabilities .cap-index { display: block; margin: 0 0 .7rem; color: var(--orange); font: 800 clamp(1.08rem, 1.4vw, 1.38rem)/1.35 var(--display); letter-spacing: -.025em; }
+.capabilities article { padding-top: .85rem; }
+.capabilities p { margin: 0; }
+
 .recognition {
   background: #dec6b9;
 }
