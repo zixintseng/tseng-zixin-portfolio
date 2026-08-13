@@ -1048,6 +1048,13 @@ nav a {
 
 .recognition-total strong { color: var(--orange); font-size: 1.25em; }
 
+/* 工具箱增加技術分類後，維持長工具列的可讀性與穩定換行。 */
+.toolkit .eyebrow { font: 800 .82rem/1.3 var(--mono); letter-spacing: .1em; }
+.toolkit .skill-row { padding: .9rem 0; }
+.toolkit .skill-row span { font-size: .7rem; line-height: 1.4; }
+.toolkit .skill-row b { display: block; margin-top: .2rem; font-size: .94rem; line-height: 1.55; }
+.toolkit .toolkit-note { margin-top: 2rem; }
+
 @media (max-width: 800px) {
   .recognition .recognition-head { grid-template-columns: 1fr; gap: .9rem; margin-bottom: 1.75rem; }
   .recognition .recognition-heading h2 { font-size: clamp(2.45rem, 12vw, 4.2rem); }
