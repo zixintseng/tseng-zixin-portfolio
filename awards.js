@@ -1,4 +1,9 @@
 const awardEvidence = {
+  'kindergarten-collection': {
+    title: 'AI 五力智慧幼兒園｜三項競賽肯定',
+    intro: '2025 第 30 屆大專校院資訊應用服務創新競賽｜教育 AI 組第一名・資訊應用組第二名・最佳人氣獎',
+    media: [['assets/awards/ict-event-01.jpg', '教育 AI 組第一名｜競賽現場', '點擊放大照片'], ['assets/awards/ict-first-certificate.png', '教育 AI 組第一名｜獎狀', '點擊放大獎狀'], ['assets/awards/ict-event-02.jpg', '資訊應用組第二名｜競賽現場', '點擊放大照片'], ['assets/awards/ict-second-certificate.png', '資訊應用組第二名｜獎狀', '點擊放大獎狀'], ['assets/awards/ict-popularity-certificate.png', '最佳人氣獎｜獎狀', '點擊放大獎狀']]
+  },
   'ict-first': {
     title: '教育 AI 組 · 第一名',
     intro: 'AI 五力智慧幼兒園｜2025 第 30 屆大專校院資訊應用服務創新競賽',
