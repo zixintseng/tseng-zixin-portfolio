@@ -1086,3 +1086,10 @@ nav a {
   letter-spacing: -.045em !important;
   white-space: nowrap !important;
 }
+
+/* 三個專案方向的綠色標題同樣保持單行，避免系統名稱被拆開。 */
+.hero-domains span {
+  font-size: clamp(.68rem, .74vw, .72rem) !important;
+  letter-spacing: -.06em !important;
+  white-space: nowrap !important;
+}
