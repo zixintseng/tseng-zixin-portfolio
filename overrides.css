@@ -1055,6 +1055,16 @@ nav a {
 .toolkit .skill-row b { display: block; margin-top: .2rem; font-size: .94rem; line-height: 1.55; }
 .toolkit .toolkit-note { margin-top: 2rem; }
 
+/* 首屏三個專案方向：成果描述在桌面版維持單行，方便快速掃讀。 */
+@media (min-width: 801px) {
+  .hero-domains b {
+    font-size: .78rem !important;
+    line-height: 1.45;
+    letter-spacing: -.035em;
+    white-space: nowrap;
+  }
+}
+
 @media (max-width: 800px) {
   .recognition .recognition-head { grid-template-columns: 1fr; gap: .9rem; margin-bottom: 1.75rem; }
   .recognition .recognition-heading h2 { font-size: clamp(2.45rem, 12vw, 4.2rem); }
