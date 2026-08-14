@@ -1107,3 +1107,12 @@ nav a {
 
 .hero-domains b { font-size: clamp(.68rem, 1.08vw, .88rem) !important; }
 .hero-domains span { font-size: clamp(.68rem, .98vw, .82rem) !important; }
+
+/* 競賽主辦資訊退居第二層，補齊可信度但不干擾獎項閱讀。 */
+.awards.awards-showcase .award-organizer {
+  display: block;
+  margin-top: .27rem;
+  color: #78625a;
+  font: 700 .72rem/1.35 var(--display);
+  letter-spacing: 0;
+}
