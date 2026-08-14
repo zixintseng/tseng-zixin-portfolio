@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台北市信用卡消費數據大數據決策分析平台</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            500: '#486581',
+                            700: '#274C77',
+                            800: '#102a43',
+                            900: '#0f172a',
+                        },
+                        neutral: {
+                            bg: '#F5F4F0',
+                            card: '#FFFFFF',
+                            border: '#E4E7EB',
+                            text: '#1F2933',
+                            muted: '#627D98'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Noto Sans TC"', '"PingFang TC"', '"Microsoft JhengHei"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Apache ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <!-- PapaParse for local CSV processing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #F5F4F0;
+            color: #1F2933;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+        }
+
+        /* Clean subtle scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F5F4F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+        /* Professional Report Panel Styling */
+        .report-panel {
+            background-color: #FFFFFF;
+            border: 1px solid #E4E7EB;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+            border-radius: 8px;
+        }
+
+        /* Form elements clean styling */
+        select, input, button {
+            transition: all 0.15s ease-in-out;
+        }
+
+        select:focus, button:focus {
+            outline: 2px solid #274C77;
+            outline-offset: 1px;
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-slate-200 selection:text-slate-900">
+
+    <!-- Top Institutional Header -->
+    <header class="bg-white border-b border-neutral-border sticky top-0 z-50">
+        <div class="max-w-[1800px] mx-auto px-4 lg:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+                <div class="w-3 h-8 bg-[#274C77] rounded-sm"></div>
+                <div>
+                    <div class="flex items-center gap-3">
+                        <h1 class="text-2xl lg:text-[26px] font-bold tracking-tight text-[#1F2933]">
+                            台北市信用卡消費大數據分析平台
+                        </h1>
+                        <span class="text-xs font-semibold text-[#274C77] bg-[#F0F4F8] border border-[#D9E2EC] px-2.5 py-1 rounded">
+                            金融研究與決策報告
+                        </span>
+                    </div>
+                    <p class="text-sm text-[#627D98] mt-1">
+                        Taipei City Credit Card Consumption Intelligence & Economic Behavior Report
+                    </p>
+                </div>
+            </div>
+
+            <!-- Global Actions & CSV Controls -->
+            <div class="flex flex-wrap items-center gap-3">
+                <label for="csvFileInput" class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white hover:bg-slate-50 text-[#274C77] border border-[#CBD5E1] rounded-md shadow-sm transition-all">
+                    <i class="fa-solid fa-file-arrow-up text-slate-500"></i>
+                    <span id="fileNameDisplay">匯入 08_台北信用卡.csv</span>
+                    <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+                </label>
+
+                <button id="resetDataBtn" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white hover:bg-slate-50 text-[#627D98] border border-[#CBD5E1] rounded-md transition-all" title="重置為原始範例數據">
+                    <i class="fa-solid fa-arrow-rotate-left"></i> 重置數據
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[1800px] mx-auto p-4 lg:p-8 space-y-6">
+
+        <!-- Financial KPI Metric Cards Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- KPI 1: Total Amount -->
+            <div class="report-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between text-sm text-[#627D98] font-medium mb-1">
+                        <span>總刷卡金額</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded">NTD</span>
+                    </div>
+                    <div class="text-[30px] font-bold text-[#1F2933] tracking-tight mt-1" id="kpiTotalAmount">NT$ 0</div>
+                </div>
+                <div class="pt-3 mt-3 border-t border-[#F0F4F8] flex items-center justify-between text-sm text-[#627D98]">
+                    <span>指標範疇</span>
+                    <span class="font-medium text-[#274C77]">全市總消費累計</span>
+                </div>
+            </div>
+
+            <!-- KPI 2: Total Transactions -->
+            <div class="report-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between text-sm text-[#627D98] font-medium mb-1">
+                        <span>總交易筆數</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded">Count</span>
+                    </div>
+                    <div class="text-[30px] font-bold text-[#1F2933] tracking-tight mt-1" id="kpiTotalCount">0 筆</div>
+                </div>
+                <div class="pt-3 mt-3 border-t border-[#F0F4F8] flex items-center justify-between text-sm text-[#627D98]">
+                    <span>刷卡頻率</span>
+                    <span class="font-medium text-[#274C77]">消費總次數統計</span>
+                </div>
+            </div>
+
+            <!-- KPI 3: Average Transaction Value -->
+            <div class="report-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between text-sm text-[#627D98] font-medium mb-1">
+                        <span>平均客單價 (ATV)</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded">Avg</span>
+                    </div>
+                    <div class="text-[30px] font-bold text-[#1F2933] tracking-tight mt-1" id="kpiAvgAmount">NT$ 0</div>
+                </div>
+                <div class="pt-3 mt-3 border-t border-[#F0F4F8] flex items-center justify-between text-sm text-[#627D98]">
+                    <span>單筆強度</span>
+                    <span class="font-medium text-[#274C77]">每筆交易均價</span>
+                </div>
+            </div>
+
+            <!-- KPI 4: Top District -->
+            <div class="report-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between text-sm text-[#627D98] font-medium mb-1">
+                        <span>最高消費行政區</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded">District</span>
+                    </div>
+                    <div class="text-[30px] font-bold text-[#1F2933] tracking-tight mt-1 truncate" id="kpiTopDistrict">--</div>
+                </div>
+                <div class="pt-3 mt-3 border-t border-[#F0F4F8] flex items-center justify-between text-sm text-[#627D98]">
+                    <span>區域規模</span>
+                    <span class="font-medium text-[#E9A23B] truncate" id="kpiTopDistrictDetail">--</span>
+                </div>
+            </div>
+
+            <!-- KPI 5: Top Industry Sector -->
+            <div class="report-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between text-sm text-[#627D98] font-medium mb-1">
+                        <span>主導產業領域</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded">Sector</span>
+                    </div>
+                    <div class="text-[30px] font-bold text-[#1F2933] tracking-tight mt-1 truncate" id="kpiTopIndustry">--</div>
+                </div>
+                <div class="pt-3 mt-3 border-t border-[#F0F4F8] flex items-center justify-between text-sm text-[#627D98]">
+                    <span>產業貢獻</span>
+                    <span class="font-medium text-[#2A9D8F] truncate" id="kpiTopIndustryDetail">--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Control Bar -->
+        <div class="report-panel p-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-6 w-full md:w-auto">
+                <div class="flex items-center gap-2 text-sm font-semibold text-[#1F2933]">
+                    <i class="fa-solid fa-sliders text-[#274C77]"></i>
+                    <span>分析維度過濾：</span>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <label class="text-sm text-[#627D98]">行政區：</label>
+                    <select id="districtFilter" class="bg-white text-[#1F2933] border border-[#CBD5E1] rounded text-sm px-3 py-1.5 focus:border-[#274C77] focus:outline-none">
+                        <option value="ALL">全部行政區 (12區)</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <label class="text-sm text-[#627D98]">產業類別：</label>
+                    <select id="industryFilter" class="bg-white text-[#1F2933] border border-[#CBD5E1] rounded text-sm px-3 py-1.5 focus:border-[#274C77] focus:outline-none">
+                        <option value="ALL">全部產業別</option>
+                    </select>
+                </div>
+
+                <!-- Active Filter Badge -->
+                <div id="activeFilterBadge" class="hidden items-center gap-2 bg-[#F0F4F8] border border-[#D9E2EC] text-[#274C77] text-sm px-3 py-1.5 rounded">
+                    <span class="font-medium" id="activeFilterText">交叉連動模式已啟用</span>
+                    <button id="clearChartFilterBtn" class="ml-1 text-[#627D98] hover:text-[#1F2933] font-bold text-sm">
+                        <i class="fa-solid fa-xmark"></i> 清除重置
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-sm text-[#627D98] flex items-center gap-2">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-[#274C77]"></span>
+                <span>圖表點擊交叉篩選已整合 (Cross-Filtering Ready)</span>
+            </div>
+        </div>
+
+        <!-- Charts Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Chart 1: Monthly Trend Line Chart (Primary Focus - 12 Cols) -->
+            <div class="lg:col-span-12 report-panel p-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-5 border-b border-[#F0F4F8] pb-3.5">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2 h-5 bg-[#274C77]"></div>
+                        <h2 class="font-bold text-[#1F2933] text-[18px] tracking-tight">維度一：全區月份消費金額與交易筆數雙軸趨勢分析</h2>
+                    </div>
+                    <span class="text-xs text-[#627D98]">可滑動底部時間軸軸塊調整觀察範圍</span>
+                </div>
+                <div id="chartTrend" class="w-full h-[380px]"></div>
+            </div>
+
+            <!-- Chart 2: District Ranking Bar Chart (6 Cols) -->
+            <div class="lg:col-span-6 report-panel p-6">
+                <div class="flex items-center justify-between mb-5 border-b border-[#F0F4F8] pb-3.5">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2 h-5 bg-[#274C77]"></div>
+                        <h2 class="font-bold text-[#1F2933] text-[18px] tracking-tight">維度二：各行政區刷卡總金額排名與比較</h2>
+                    </div>
+                    <span class="text-xs text-[#627D98]">點擊長條可篩選該區</span>
+                </div>
+                <div id="chartDistrict" class="w-full h-[360px]"></div>
+            </div>
+
+            <!-- Chart 3: Industry Distribution Donut Chart (6 Cols) -->
+            <div class="lg:col-span-6 report-panel p-6">
+                <div class="flex items-center justify-between mb-5 border-b border-[#F0F4F8] pb-3.5">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2 h-5 bg-[#274C77]"></div>
+                        <h2 class="font-bold text-[#1F2933] text-[18px] tracking-tight">維度三：信用卡產業消費結構占比</h2>
+                    </div>
+                    <span class="text-xs text-[#627D98]">點擊扇區進行產業聚焦</span>
+                </div>
+                <div id="chartIndustry" class="w-full h-[360px]"></div>
+            </div>
+
+            <!-- Chart 4: Demographic Gender & Age Profile (6 Cols) -->
+            <div class="lg:col-span-6 report-panel p-6">
+                <div class="flex items-center justify-between mb-5 border-b border-[#F0F4F8] pb-3.5">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2 h-5 bg-[#274C77]"></div>
+                        <h2 class="font-bold text-[#1F2933] text-[18px] tracking-tight">維度四：客群性別與年齡層消費交叉結構</h2>
+                    </div>
+                    <span class="text-xs text-[#627D98]">按年齡區間統計</span>
+                </div>
+                <div id="chartDemographic" class="w-full h-[360px]"></div>
+            </div>
+
+            <!-- Chart 5: District x Industry Heatmap Matrix (6 Cols) -->
+            <div class="lg:col-span-6 report-panel p-6">
+                <div class="flex items-center justify-between mb-5 border-b border-[#F0F4F8] pb-3.5">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2 h-5 bg-[#274C77]"></div>
+                        <h2 class="font-bold text-[#1F2933] text-[18px] tracking-tight">維度五：行政區 x 產業別 消費密度矩陣</h2>
+                    </div>
+                    <span class="text-xs text-[#627D98]">點擊色塊鎖定單點關聯</span>
+                </div>
+                <div id="chartHeatmap" class="w-full h-[360px]"></div>
+            </div>
+
+            <!-- Chart 6: Customer Behavior Radar Chart (12 Cols) -->
+            <div class="lg:col-span-12 report-panel p-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-5 border-b border-[#F0F4F8] pb-3.5">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2 h-5 bg-[#274C77]"></div>
+                        <div>
+                            <h2 class="font-bold text-[#1F2933] text-[18px] tracking-tight">綜合指標：重點行政區消費行為綜合評價雷達</h2>
+                            <p class="text-xs text-[#627D98] mt-0.5">多維度歸一化指標比較 (100分為最高表現分)</p>
+                        </div>
+                    </div>
+
+                    <!-- Radar Control Bar -->
+                    <div class="flex flex-wrap items-center gap-3 text-sm">
+                        <!-- Mode Switcher -->
+                        <div class="inline-flex rounded-md border border-[#CBD5E1] bg-white p-0.5 shadow-sm">
+                            <button id="radarModeAllBtn" class="px-3 py-1 text-sm font-medium rounded text-white bg-[#274C77] transition-colors">
+                                全部對比
+                            </button>
+                            <button id="radarModeSingleBtn" class="px-3 py-1 text-sm font-medium rounded text-[#627D98] hover:text-[#1F2933] transition-colors">
+                                單區聚焦
+                            </button>
+                        </div>
+
+                        <!-- Single Mode District Select -->
+                        <div id="radarDistrictSelectWrap" class="hidden items-center gap-1.5">
+                            <label for="radarDistrictSelect" class="text-sm font-medium text-[#627D98]">聚焦區域：</label>
+                            <select id="radarDistrictSelect" class="bg-white text-[#1F2933] border border-[#CBD5E1] rounded text-sm px-2.5 py-1 focus:border-[#274C77] focus:outline-none">
+                                <option value="信義核心區">信義核心區</option>
+                                <option value="大安文教區">大安文教區</option>
+                                <option value="中山商業區">中山商業區</option>
+                                <option value="內湖科技區">內湖科技區</option>
+                                <option value="松山金融區">松山金融區</option>
+                            </select>
+                        </div>
+
+                        <!-- City Avg Toggle Switch -->
+                        <label class="inline-flex items-center gap-2 cursor-pointer bg-white border border-[#CBD5E1] px-3 py-1 rounded text-sm text-[#1F2933] hover:bg-slate-50 transition-colors">
+                            <input type="checkbox" id="radarShowAvgCheck" checked class="rounded text-[#274C77] focus:ring-[#274C77]">
+                            <span class="font-medium text-[#627D98]">與全市平均比較</span>
+                        </label>
+
+                        <!-- Metric Definition Modal Trigger -->
+                        <button id="radarInfoBtn" class="inline-flex items-center gap-1.5 px-3 py-1 text-sm text-[#274C77] bg-[#F0F4F8] hover:bg-[#D9E2EC] border border-[#D9E2EC] rounded font-medium transition-colors">
+                            <i class="fa-solid fa-circle-info"></i> 指標定義
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Collapsible Metric Definitions Drawer -->
+                <div id="radarInfoBanner" class="hidden mb-5 p-4 bg-[#F0F4F8] border border-[#D9E2EC] rounded-md text-sm text-[#1F2933]">
+                    <div class="font-bold text-[#274C77] mb-2 flex items-center justify-between border-b border-[#D9E2EC] pb-2">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-book-open text-[#274C77]"></i> 綜合雷達六大評估維度定義與計算公式</span>
+                        <button id="closeRadarInfoBtn" class="text-[#627D98] hover:text-[#1F2933] font-bold"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs leading-relaxed">
+                        <div class="bg-white p-3 rounded border border-[#E4E7EB]">
+                            <strong class="text-[#1F2933] block text-sm mb-1">1. 總刷卡金額：</strong>該區卡友年度總刷卡金額歸一化得分 (Max-Min 標準化，滿分 100 分)。
+                        </div>
+                        <div class="bg-white p-3 rounded border border-[#E4E7EB]">
+                            <strong class="text-[#1F2933] block text-sm mb-1">2. 平均客單價：</strong>該區單筆消費均價 (總金額 / 總筆數) 表現得分。
+                        </div>
+                        <div class="bg-white p-3 rounded border border-[#E4E7EB]">
+                            <strong class="text-[#1F2933] block text-sm mb-1">3. 消費頻次(筆數)：</strong>區域內月均刷卡總交易次數與人口消費活躍程度。
+                        </div>
+                        <div class="bg-white p-3 rounded border border-[#E4E7EB]">
+                            <strong class="text-[#1F2933] block text-sm mb-1">4. 百貨通路比重：</strong>大型百貨商場與購物中心消費金額占該區刷卡總量之比例。
+                        </div>
+                        <div class="bg-white p-3 rounded border border-[#E4E7EB]">
+                            <strong class="text-[#1F2933] block text-sm mb-1">5. 餐飲娛樂活躍度：</strong>餐飲美食、觀光休閒與文化娛樂類別之刷卡佔比與密集度。
+                        </div>
+                        <div class="bg-white p-3 rounded border border-[#E4E7EB]">
+                            <strong class="text-[#1F2933] block text-sm mb-1">6. 假日消費爆發力：</strong>例假日相較平日刷卡金額增長之彈性強度評分。
+                        </div>
+                    </div>
+                </div>
+
+                <div id="chartRadar" class="w-full h-[400px]"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Sample Institutional Dataset representing Taipei Credit Card Open Data
+        const defaultRawData = [
+            // Month, District, Industry, Gender, AgeGroup, Count, Amount
+            {年月: "202301", 地區: "信義區", 產業別: "百貨購物", 性別: "女", 年齡層: "30-39歲", 交易筆數: 125000, 交易金額: 520000000},
+            {年月: "202301", 地區: "信義區", 產業別: "餐飲美食", 性別: "女", 年齡層: "20-29歲", 交易筆數: 98000, 交易金額: 147000000},
+            {年月: "202301", 地區: "信義區", 產業別: "住宿飯店", 性別: "男", 年齡層: "40-49歲", 交易筆數: 15000, 交易金額: 95000000},
+            {年月: "202301", 地區: "信義區", 產業別: "時尚服飾", 性別: "女", 年齡層: "30-39歲", 交易筆數: 64000, 交易金額: 180000000},
+            {年月: "202301", 地區: "信義區", 產業別: "文化娛樂", 性別: "男", 年齡層: "20-29歲", 交易筆數: 52000, 交易金額: 78000000},
+
+            // Daan
+            {年月: "202301", 地區: "大安區", 產業別: "餐飲美食", 性別: "女", 年齡層: "30-39歲", 交易筆數: 140000, 交易金額: 280000000},
+            {年月: "202301", 地區: "大安區", 產業別: "醫療保健", 性別: "女", 年齡層: "50-59歲", 交易筆數: 45000, 交易金額: 135000000},
+            {年月: "202301", 地區: "大安區", 產業別: "教育文教", 性別: "男", 年齡層: "40-49歲", 交易筆數: 38000, 交易金額: 114000000},
+            {年月: "202301", 地區: "大安區", 產業別: "超級市場", 性別: "女", 年齡層: "40-49歲", 交易筆數: 165000, 交易金額: 198000000},
+            {年月: "202301", 地區: "大安區", 產業別: "百貨購物", 性別: "女", 年齡層: "30-39歲", 交易筆數: 92000, 交易金額: 310000000},
+
+            // Zhongshan
+            {年月: "202301", 地區: "中山區", 產業別: "餐飲美食", 性別: "男", 年齡層: "30-39歲", 交易筆數: 155000, 交易金額: 310000000},
+            {年月: "202301", 地區: "中山區", 產業別: "住宿飯店", 性別: "男", 年齡層: "30-39歲", 交易筆數: 22000, 交易金額: 132000000},
+            {年月: "202301", 地區: "中山區", 產業別: "交通運輸", 性別: "女", 年齡層: "20-29歲", 交易筆數: 95000, 交易金額: 85500000},
+            {年月: "202301", 地區: "中山區", 產業別: "時尚服飾", 性別: "女", 年齡層: "30-39歲", 交易筆數: 41000, 交易金額: 125000000},
+
+            // Songshan
+            {年月: "202301", 地區: "松山區", 產業別: "交通運輸", 性別: "男", 年齡層: "40-49歲", 交易筆數: 110000, 交易金額: 220000000},
+            {年月: "202301", 地區: "松山區", 產業別: "百貨購物", 性別: "女", 年齡層: "30-39歲", 交易筆數: 78000, 交易金額: 273000000},
+
+            // Zhongzheng
+            {年月: "202301", 地區: "中正區", 產業別: "教育文教", 性別: "男", 年齡層: "20-29歲", 交易筆數: 88000, 交易金額: 132000000},
+            {年月: "202301", 地區: "中正區", 產業別: "交通運輸", 性別: "女", 年齡層: "30-39歲", 交易筆數: 130000, 交易金額: 156000000},
+
+            // Neihu
+            {年月: "202301", 地區: "內湖區", 產業別: "超級市場", 性別: "女", 年齡層: "30-39歲", 交易筆數: 145000, 交易金額: 290000000},
+            {年月: "202301", 地區: "內湖區", 產業別: "資訊數位", 性別: "男", 年齡層: "30-39歲", 交易筆數: 68000, 交易金額: 238000000},
+
+            // Shilin
+            {年月: "202301", 地區: "士林區", 產業別: "餐飲美食", 性別: "女", 年齡層: "20-29歲", 交易筆數: 112000, 交易金額: 168000000},
+            {年月: "202301", 地區: "士林區", 產業別: "觀光休閒", 性別: "男", 年齡層: "30-39歲", 交易筆數: 54000, 交易金額: 108000000},
+
+            // Other Districts
+            {年月: "202301", 地區: "大同區", 產業別: "餐飲美食", 性別: "女", 年齡層: "40-49歲", 交易筆數: 65000, 交易金額: 97500000},
+            {年月: "202301", 地區: "萬華區", 產業別: "文化娛樂", 性別: "男", 年齡層: "50-59歲", 交易筆數: 72000, 交易金額: 86400000},
+            {年月: "202301", 地區: "文山區", 產業別: "超級市場", 性別: "女", 年齡層: "40-49歲", 交易筆數: 89000, 交易金額: 106800000},
+            {年月: "202301", 地區: "南港區", 產業別: "資訊數位", 性別: "男", 年齡層: "30-39歲", 交易筆數: 58000, 交易金額: 174000000},
+            {年月: "202301", 地區: "北投區", 產業別: "觀光休閒", 性別: "女", 年齡層: "50-59歲", 交易筆數: 48000, 交易金額: 120000000},
+
+            // Trend time series data
+            {年月: "202302", 地區: "信義區", 產業別: "百貨購物", 性別: "女", 年齡層: "30-39歲", 交易筆數: 130000, 交易金額: 560000000},
+            {年月: "202303", 地區: "大安區", 產業別: "餐飲美食", 性別: "女", 年齡層: "20-29歲", 交易筆數: 145000, 交易金額: 310000000},
+            {年月: "202304", 地區: "中山區", 產業別: "住宿飯店", 性別: "男", 年齡層: "40-49歲", 交易筆數: 31000, 交易金額: 155000000},
+            {年月: "202305", 地區: "內湖區", 產業別: "資訊數位", 性別: "男", 年齡層: "30-39歲", 交易筆數: 75000, 交易金額: 280000000},
+            {年月: "202306", 地區: "松山區", 產業別: "交通運輸", 性別: "男", 年齡層: "40-49歲", 交易筆數: 125000, 交易金額: 240000000},
+            {年月: "202307", 地區: "信義區", 產業別: "觀光休閒", 性別: "女", 年齡層: "20-29歲", 交易筆數: 110000, 交易金額: 220000000},
+            {年月: "202308", 地區: "大安區", 產業別: "百貨購物", 性別: "女", 年齡層: "30-39歲", 交易筆數: 105000, 交易金額: 390000000},
+            {年月: "202309", 地區: "中正區", 產業別: "教育文教", 性別: "男", 年齡層: "20-29歲", 交易筆數: 95000, 交易金額: 148000000},
+            {年月: "202310", 地區: "信義區", 產業別: "百貨購物", 性別: "女", 年齡層: "30-39歲", 交易筆數: 210000, 交易金額: 980000000},
+            {年月: "202311", 地區: "內湖區", 產業別: "資訊數位", 性別: "男", 年齡層: "30-39歲", 交易筆數: 180000, 交易金額: 820000000},
+            {年月: "202312", 地區: "中山區", 產業別: "餐飲美食", 性別: "女", 年齡層: "30-39歲", 交易筆數: 240000, 交易金額: 650000000}
+        ];
+
+        // Institutional Financial Semantic Color Palette
+        const BRAND_COLORS = {
+            deepBlue: '#274C77',   // Primary / Top 3 / Main metric
+            dataBlue: '#4C78A8',   // Secondary series / Count bar
+            teal: '#2A9D8F',       // Top 2 / Positive / Sector 2
+            amber: '#E9A23B',      // Top 1 / Highlight / Female / Sector 3
+            coral: '#D96C5F',      // Warning / Sector 4
+            greyPurple: '#7B6D9C', // Sector 5
+            sage: '#7A9E7E',       // Growth / Sector 6
+            greyBlue: '#78909C',   // Rank 4+ / Default series / Average
+            lightGrey: '#B0BEC5',  // Merged / Other category
+            textPrimary: '#1F2933',
+            textSecondary: '#627D98',
+            gridBorder: '#E4E7EB'
+        };
+
+        let activeDataset = [...defaultRawData];
+        let chartInstances = {};
+
+        function initChartInstances() {
+            chartInstances.trend = echarts.init(document.getElementById('chartTrend'));
+            chartInstances.district = echarts.init(document.getElementById('chartDistrict'));
+            chartInstances.industry = echarts.init(document.getElementById('chartIndustry'));
+            chartInstances.demographic = echarts.init(document.getElementById('chartDemographic'));
+            chartInstances.heatmap = echarts.init(document.getElementById('chartHeatmap'));
+            chartInstances.radar = echarts.init(document.getElementById('chartRadar'));
+        }
+
+        function bindChartEvents() {
+            if (chartInstances.district) {
+                chartInstances.district.on('click', (params) => {
+                    if (params && params.name) {
+                        const distSelect = document.getElementById('districtFilter');
+                        if (distSelect) {
+                            distSelect.value = params.name;
+                            applyFilters();
+                        }
+                    }
+                });
+            }
+
+            if (chartInstances.industry) {
+                chartInstances.industry.on('click', (params) => {
+                    if (params && params.name) {
+                        const indSelect = document.getElementById('industryFilter');
+                        if (indSelect) {
+                            indSelect.value = params.name;
+                            applyFilters();
+                        }
+                    }
+                });
+            }
+
+            if (chartInstances.heatmap) {
+                chartInstances.heatmap.on('click', (params) => {
+                    if (params && params.value) {
+                        const cleanData = sanitizeDataForCharts(activeDataset, ['industry', 'district']);
+                        const districts = Array.from(new Set(cleanData.map(d => d.地區))).filter(Boolean).slice(0, 8);
+                        const industries = Array.from(new Set(cleanData.map(d => d.產業別))).filter(Boolean).slice(0, 6);
+                        
+                        if (districts.length === 0) districts.push('信義區', '大安區', '中山區', '松山區', '內湖區');
+                        if (industries.length === 0) industries.push('百貨購物', '餐飲美食', '住宿飯店', '交通運輸', '超級市場');
+
+                        const dName = districts[params.value[0]];
+                        const iName = industries[params.value[1]];
+
+                        if (dName) document.getElementById('districtFilter').value = dName;
+                        if (iName) document.getElementById('industryFilter').value = iName;
+                        applyFilters();
+                    }
+                });
+            }
+        }
+
+        // Interactive Radar State
+        let radarState = {
+            mode: 'all', // 'all' or 'single'
+            selectedDistrict: '信義核心區',
+            showAvg: true
+        };
+
+        const radarIndicators = [
+            { name: '總刷卡金額', max: 100 },
+            { name: '平均客單價', max: 100 },
+            { name: '消費頻次(筆數)', max: 100 },
+            { name: '百貨通路比重', max: 100 },
+            { name: '餐飲娛樂活躍度', max: 100 },
+            { name: '假日消費爆發力', max: 100 }
+        ];
+
+        const radarProfiles = {
+            '信義核心區': { value: [95, 90, 85, 98, 88, 92], color: BRAND_COLORS.deepBlue },
+            '大安文教區': { value: [82, 85, 90, 70, 95, 80], color: BRAND_COLORS.teal },
+            '中山商業區': { value: [88, 78, 92, 80, 90, 85], color: BRAND_COLORS.greyPurple },
+            '內湖科技區': { value: [76, 82, 70, 45, 65, 55], color: BRAND_COLORS.amber },
+            '松山金融區': { value: [80, 88, 78, 60, 75, 72], color: BRAND_COLORS.coral }
+        };
+
+        const cityAvgScores = [65, 65, 65, 65, 65, 65];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initChartInstances();
+            bindChartEvents(); // Cross-Filtering listeners
+            bindRadarControls(); // Interactive Radar listeners
+            populateFilterDropdowns(activeDataset);
+            renderDashboard(activeDataset);
+
+            // Responsive auto resize
+            window.addEventListener('resize', () => {
+                Object.values(chartInstances).forEach(chart => chart && chart.resize());
+            });
+
+            // CSV Upload Listener
+            document.getElementById('csvFileInput').addEventListener('change', handleCSVUpload);
+            document.getElementById('resetDataBtn').addEventListener('click', resetAllFiltersAndData);
+            document.getElementById('clearChartFilterBtn').addEventListener('click', resetChartFiltersOnly);
+
+            // Filter Dropdown Listeners
+            document.getElementById('districtFilter').addEventListener('change', () => applyFilters());
+            document.getElementById('industryFilter').addEventListener('change', () => applyFilters());
+        });
+
+        function bindRadarControls() {
+            const modeAllBtn = document.getElementById('radarModeAllBtn');
+            const modeSingleBtn = document.getElementById('radarModeSingleBtn');
+            const districtSelectWrap = document.getElementById('radarDistrictSelectWrap');
+            const districtSelect = document.getElementById('radarDistrictSelect');
+            const showAvgCheck = document.getElementById('radarShowAvgCheck');
+            const infoBtn = document.getElementById('radarInfoBtn');
+            const infoBanner = document.getElementById('radarInfoBanner');
+            const closeInfoBtn = document.getElementById('closeRadarInfoBtn');
+
+            modeAllBtn.addEventListener('click', () => {
+                radarState.mode = 'all';
+                modeAllBtn.className = 'px-3 py-1 text-sm font-medium rounded text-white bg-[#274C77] transition-colors';
+                modeSingleBtn.className = 'px-3 py-1 text-sm font-medium rounded text-[#627D98] hover:text-[#1F2933] transition-colors';
+                districtSelectWrap.classList.add('hidden');
+                districtSelectWrap.classList.remove('flex');
+                renderRadarChart(activeDataset);
+            });
+
+            modeSingleBtn.addEventListener('click', () => {
+                radarState.mode = 'single';
+                modeSingleBtn.className = 'px-3 py-1 text-sm font-medium rounded text-white bg-[#274C77] transition-colors';
+                modeAllBtn.className = 'px-3 py-1 text-sm font-medium rounded text-[#627D98] hover:text-[#1F2933] transition-colors';
+                districtSelectWrap.classList.remove('hidden');
+                districtSelectWrap.classList.add('flex');
+                renderRadarChart(activeDataset);
+            });
+
+            districtSelect.addEventListener('change', (e) => {
+                radarState.selectedDistrict = e.target.value;
+                renderRadarChart(activeDataset);
+            });
+
+            showAvgCheck.addEventListener('change', (e) => {
+                radarState.showAvg = e.target.checked;
+                renderRadarChart(activeDataset);
+            });
+
+            infoBtn.addEventListener('click', () => {
+                infoBanner.classList.toggle('hidden');
+            });
+
+            closeInfoBtn.addEventListener('click', () => {
+                infoBanner.classList.add('hidden');
+            });
+        }
+
+        function resetAllFiltersAndData() {
+            activeDataset = [...defaultRawData];
+            document.getElementById('fileNameDisplay').textContent = '匯入 08_台北信用卡.csv';
+            document.getElementById('districtFilter').value = 'ALL';
+            document.getElementById('industryFilter').value = 'ALL';
+            document.getElementById('activeFilterBadge').classList.add('hidden');
+            populateFilterDropdowns(activeDataset);
+            renderDashboard(activeDataset);
+        }
+
+        function resetChartFiltersOnly() {
+            document.getElementById('districtFilter').value = 'ALL';
+            document.getElementById('industryFilter').value = 'ALL';
+            document.getElementById('activeFilterBadge').classList.add('hidden');
+            applyFilters();
+        }
+
+        function handleCSVUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileNameDisplay').textContent = file.name;
+
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    if (results.data && results.data.length > 0) {
+                        const normalizedData = results.data.map(row => {
+                            const newRow = {};
+                            for (let key in row) {
+                                const cleanKey = key.replace(/^\ufeff/, '').trim();
+                                const val = row[key];
+                                if (cleanKey.includes('年月') || cleanKey.includes('Date') || cleanKey.includes('年度')) newRow['年月'] = String(val).trim();
+                                else if (cleanKey.includes('地區') || cleanKey.includes('行政區') || cleanKey.includes('District')) newRow['地區'] = String(val).trim();
+                                else if (cleanKey.includes('產業') || cleanKey.includes('行業') || cleanKey.includes('Industry')) newRow['產業別'] = String(val).trim();
+                                else if (cleanKey.includes('性別') || cleanKey.includes('Gender')) newRow['性別'] = String(val).trim();
+                                else if (cleanKey.includes('年齡') || cleanKey.includes('Age')) newRow['年齡層'] = String(val).trim();
+                                else if (cleanKey.includes('筆數') || cleanKey.includes('Count')) newRow['交易筆數'] = parseFloat(String(val).replace(/,/g, '')) || 0;
+                                else if (cleanKey.includes('金額') || cleanKey.includes('Amount')) newRow['交易金額'] = parseFloat(String(val).replace(/,/g, '')) || 0;
+                            }
+                            if (!newRow['地區']) newRow['地區'] = '其他區';
+                            if (!newRow['產業別']) newRow['產業別'] = '綜合消費';
+                            if (!newRow['年月']) newRow['年月'] = '202301';
+                            if (!newRow['性別']) newRow['性別'] = '不比對';
+                            if (!newRow['年齡層']) newRow['年齡層'] = '不比對';
+                            if (!newRow['交易筆數']) newRow['交易筆數'] = 1;
+                            if (!newRow['交易金額']) newRow['交易金額'] = 0;
+                            return newRow;
+                        });
+
+                        activeDataset = normalizedData;
+                        populateFilterDropdowns(activeDataset);
+                        renderDashboard(activeDataset);
+                    }
+                }
+            });
+        }
+
+        // Sanitize out total/summary rows
+        function sanitizeDataForCharts(data, excludeTypes = []) {
+            return data.filter(d => {
+                const isSummaryIndustry = ['全產業', '合計', '總計', '全部', '全領域', '--', 'N/A', '', 'undefined'].includes(d.產業別);
+                const isSummaryDistrict = ['全區綜合', '全區', '合計', '總計', '全市', '全全區', '--', 'N/A', '', 'undefined'].includes(d.地區);
+
+                if (excludeTypes.includes('industry') && isSummaryIndustry) return false;
+                if (excludeTypes.includes('district') && isSummaryDistrict) return false;
+                if (d.產業別 === '--' || d.地區 === '--') return false;
+
+                return true;
+            });
+        }
+
+        function populateFilterDropdowns(data) {
+            const districtSelect = document.getElementById('districtFilter');
+            const industrySelect = document.getElementById('industryFilter');
+
+            const cleanData = sanitizeDataForCharts(data, ['industry', 'district']);
+
+            const districts = Array.from(new Set(cleanData.map(d => d.地區))).filter(Boolean);
+            const industries = Array.from(new Set(cleanData.map(d => d.產業別))).filter(Boolean);
+
+            const currDist = districtSelect.value;
+            const currInd = industrySelect.value;
+
+            districtSelect.innerHTML = '<option value="ALL">全部行政區 (' + districts.length + '區)</option>';
+            districts.forEach(d => {
+                districtSelect.innerHTML += `<option value="${d}">${d}</option>`;
+            });
+
+            industrySelect.innerHTML = '<option value="ALL">全部產業別 (' + industries.length + '類)</option>';
+            industries.forEach(i => {
+                industrySelect.innerHTML += `<option value="${i}">${i}</option>`;
+            });
+
+            if (districts.includes(currDist)) districtSelect.value = currDist;
+            if (industries.includes(currInd)) industrySelect.value = currInd;
+        }
+
+        function applyFilters() {
+            const selDistrict = document.getElementById('districtFilter').value;
+            const selIndustry = document.getElementById('industryFilter').value;
+
+            let filtered = activeDataset;
+
+            if (selDistrict !== 'ALL') {
+                filtered = filtered.filter(d => d.地區 === selDistrict || d.地區 === '全區綜合');
+            }
+            if (selIndustry !== 'ALL') {
+                filtered = filtered.filter(d => d.產業別 === selIndustry || d.產業別 === '全產業');
+            }
+
+            const badge = document.getElementById('activeFilterBadge');
+            const badgeText = document.getElementById('activeFilterText');
+
+            if (selDistrict !== 'ALL' || selIndustry !== 'ALL') {
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+                let text = '已篩選：';
+                if (selDistrict !== 'ALL') text += ` [${selDistrict}]`;
+                if (selIndustry !== 'ALL') text += ` [${selIndustry}]`;
+                badgeText.textContent = text;
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+            }
+
+            renderDashboard(filtered);
+        }
+
+        function renderDashboard(data) {
+            updateKPICards(data);
+            renderTrendChart(data);
+            renderDistrictChart(data);
+            renderIndustryChart(data);
+            renderDemographicChart(data);
+            renderHeatmapChart(data);
+            renderRadarChart(data);
+        }
+
+        function updateKPICards(data) {
+            const detailData = sanitizeDataForCharts(data, ['industry', 'district']);
+            const calcData = detailData.length > 0 ? detailData : data;
+
+            const totalAmt = calcData.reduce((acc, curr) => acc + (curr.交易金額 || 0), 0);
+            const totalCnt = calcData.reduce((acc, curr) => acc + (curr.交易筆數 || 0), 0);
+            const avgAmt = totalCnt > 0 ? Math.round(totalAmt / totalCnt) : 0;
+
+            document.getElementById('kpiTotalAmount').textContent = 'NT$ ' + totalAmt.toLocaleString();
+            document.getElementById('kpiTotalCount').textContent = totalCnt.toLocaleString() + ' 筆';
+            document.getElementById('kpiAvgAmount').textContent = 'NT$ ' + avgAmt.toLocaleString();
+
+            const districtMap = {};
+            calcData.forEach(d => {
+                if (d.地區) districtMap[d.地區] = (districtMap[d.地區] || 0) + (d.交易金額 || 0);
+            });
+            const topDistrictEntry = Object.entries(districtMap).sort((a, b) => b[1] - a[1])[0] || ['無', 0];
+            document.getElementById('kpiTopDistrict').textContent = topDistrictEntry[0];
+            document.getElementById('kpiTopDistrictDetail').textContent = '金額 NT$ ' + Math.round(topDistrictEntry[1] / 10000).toLocaleString() + ' 萬';
+
+            const indMap = {};
+            calcData.forEach(d => {
+                if (d.產業別) indMap[d.產業別] = (indMap[d.產業別] || 0) + (d.交易金額 || 0);
+            });
+            const topIndEntry = Object.entries(indMap).sort((a, b) => b[1] - a[1])[0] || ['無', 0];
+            document.getElementById('kpiTopIndustry').textContent = topIndEntry[0];
+            document.getElementById('kpiTopIndustryDetail').textContent = '金額 NT$ ' + Math.round(topIndEntry[1] / 10000).toLocaleString() + ' 萬';
+        }
+
+        function renderTrendChart(data) {
+            const monthMap = {};
+            data.forEach(d => {
+                const m = d.年月 || '未知';
+                if (!monthMap[m]) monthMap[m] = { amount: 0, count: 0 };
+                monthMap[m].amount += d.交易金額 || 0;
+                monthMap[m].count += d.交易筆數 || 0;
+            });
+
+            const months = Object.keys(monthMap).sort();
+            const amounts = months.map(m => Math.round(monthMap[m].amount / 10000));
+            const counts = months.map(m => monthMap[m].count);
+
+            const maxCount = Math.max(...counts, 0);
+            const countSeriesData = counts.map(c => {
+                if (c === maxCount && maxCount > 0) {
+                    return {
+                        value: c,
+                        itemStyle: { color: BRAND_COLORS.amber }
+                    };
+                }
+                return c;
+            });
+
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'cross', crossStyle: { color: BRAND_COLORS.textSecondary } },
+                    backgroundColor: '#FFFFFF',
+                    borderColor: BRAND_COLORS.gridBorder,
+                    borderWidth: 1,
+                    padding: [10, 14],
+                    textStyle: { color: BRAND_COLORS.textPrimary, fontSize: 13 },
+                    shadowBlur: 4,
+                    shadowColor: 'rgba(0,0,0,0.06)'
+                },
+                legend: {
+                    data: ['刷卡金額 (萬元)', '交易筆數'],
+                    textStyle: { color: BRAND_COLORS.textSecondary, fontSize: 12 },
+                    top: '0%',
+                    icon: 'rect',
+                    itemWidth: 14,
+                    itemHeight: 10
+                },
+                grid: { left: '4%', right: '5%', bottom: '15%', top: '15%', containLabel: true },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: months,
+                        axisPointer: { type: 'shadow' },
+                        axisLine: { lineStyle: { color: '#CBD5E1' } },
+                        axisLabel: { color: BRAND_COLORS.textSecondary, fontSize: 12 }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '金額 (萬元)',
+                        nameTextStyle: { color: BRAND_COLORS.deepBlue, fontSize: 12, padding: [0, 0, 4, 0] },
+                        axisLine: { show: false },
+                        splitLine: { lineStyle: { color: '#F0F4F8', type: 'solid' } },
+                        axisLabel: { color: BRAND_COLORS.textSecondary, fontSize: 12 }
+                    },
+                    {
+                        type: 'value',
+                        name: '交易筆數',
+                        nameTextStyle: { color: BRAND_COLORS.dataBlue, fontSize: 12, padding: [0, 0, 4, 0] },
+                        axisLine: { show: false },
+                        splitLine: { show: false },
+                        axisLabel: { color: BRAND_COLORS.textSecondary, fontSize: 12 }
+                    }
+                ],
+                dataZoom: [
+                    { type: 'inside', start: 0, end: 100 },
+                    { type: 'slider', bottom: '2%', handleColor: BRAND_COLORS.deepBlue, textStyle: { color: BRAND_COLORS.textSecondary, fontSize: 11 } }
+                ],
+                series: [
+                    {
+                        name: '刷卡金額 (萬元)',
+                        type: 'line',
+                        smooth: false,
+                        symbol: 'circle',
+                        symbolSize: 7,
+                        itemStyle: { color: BRAND_COLORS.deepBlue },
+                        lineStyle: { width: 2.5, color: BRAND_COLORS.deepBlue },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(39, 76, 119, 0.16)' },
+                                { offset: 1, color: 'rgba(39, 76, 119, 0.01)' }
+                            ])
+                        },
+                        data: amounts
+                    },
+                    {
+                        name: '交易筆數',
+                        type: 'bar',
+                        yAxisIndex: 1,
+                        barWidth: '35%',
+                        itemStyle: {
+                            color: BRAND_COLORS.dataBlue,
+                            borderRadius: [2, 2, 0, 0]
+                        },
+                        data: countSeriesData
+                    }
+                ]
+            };
+
+            chartInstances.trend.setOption(option, true);
+        }
+
+        function renderDistrictChart(data) {
+            const cleanData = sanitizeDataForCharts(data, ['district']);
+            
+            const districtMap = {};
+            cleanData.forEach(d => {
+                const dist = d.地區 || '未知';
+                if (!districtMap[dist]) districtMap[dist] = { amount: 0, count: 0 };
+                districtMap[dist].amount += d.交易金額 || 0;
+                districtMap[dist].count += d.交易筆數 || 0;
+            });
+
+            const sorted = Object.entries(districtMap).sort((a, b) => a[1].amount - b[1].amount);
+            const districts = sorted.map(s => s[0]);
+            const rawAmounts = sorted.map(s => Math.round(s[1].amount / 10000));
+
+            const totalItems = sorted.length;
+            const barData = rawAmounts.map((amt, idx) => {
+                const rankFromTop = totalItems - idx;
+                let barColor = BRAND_COLORS.greyBlue;
+                if (rankFromTop === 1) barColor = BRAND_COLORS.amber;
+                else if (rankFromTop === 2) barColor = BRAND_COLORS.teal;
+                else if (rankFromTop === 3) barColor = BRAND_COLORS.deepBlue;
+
+                return {
+                    value: amt,
+                    itemStyle: {
+                        color: barColor,
+                        borderRadius: [0, 2, 2, 0]
+                    }
+                };
+            });
+
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    backgroundColor: '#FFFFFF',
+                    borderColor: BRAND_COLORS.gridBorder,
+                    borderWidth: 1,
+                    padding: [8, 12],
+                    textStyle: { color: BRAND_COLORS.textPrimary, fontSize: 13 },
+                    formatter: function(params) {
+                        if (!params || !params[0]) return '';
+                        return `<div style="font-weight:600; font-size:14px; margin-bottom:2px;">${params[0].name}</div>金額: <span style="font-weight:600;">NT$ ${params[0].value.toLocaleString()} 萬元</span>`;
+                    }
+                },
+                grid: { left: '4%', right: '12%', bottom: '4%', top: '6%', containLabel: true },
+                xAxis: {
+                    type: 'value',
+                    name: '萬元',
+                    nameTextStyle: { color: BRAND_COLORS.textSecondary, fontSize: 12 },
+                    axisLabel: { color: BRAND_COLORS.textSecondary, fontSize: 12 },
+                    splitLine: { lineStyle: { color: '#F0F4F8' } }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: districts,
+                    axisLabel: { color: BRAND_COLORS.textPrimary, fontSize: 12 },
+                    axisLine: { lineStyle: { color: '#CBD5E1' } }
+                },
+                series: [
+                    {
+                        name: '金額 (萬元)',
+                        type: 'bar',
+                        cursor: 'pointer',
+                        barWidth: '55%',
+                        label: { show: true, position: 'right', color: BRAND_COLORS.textSecondary, fontSize: 12, formatter: '{c}萬' },
+                        data: barData
+                    }
+                ]
+            };
+
+            chartInstances.district.setOption(option, true);
+        }
+
+        function renderIndustryChart(data) {
+            const cleanData = sanitizeDataForCharts(data, ['industry']).filter(d => d.產業別 && d.產業別 !== '--' && d.產業別 !== 'N/A');
+
+            const indMap = {};
+            cleanData.forEach(d => {
+                const ind = d.產業別 || '其他';
+                indMap[ind] = (indMap[ind] || 0) + (d.交易金額 || 0);
+            });
+
+            let rawPieData = Object.entries(indMap)
+                .filter(([name, value]) => name && name !== '--' && value > 0)
+                .map(([name, value]) => ({
+                    name,
+                    value: Math.round(value / 10000)
+                }))
+                .sort((a, b) => b.value - a.value);
+
+            const totalVal = rawPieData.reduce((acc, curr) => acc + curr.value, 0);
+
+            const pieData = rawPieData.map((item, idx) => {
+                const percent = totalVal > 0 ? (item.value / totalVal) * 100 : 0;
+                const shouldShowLabel = idx < 5 && percent >= 5;
+
+                return {
+                    ...item,
+                    label: {
+                        show: shouldShowLabel,
+                        position: 'outside',
+                        color: BRAND_COLORS.textPrimary,
+                        fontSize: 12,
+                        lineHeight: 18,
+                        formatter: '{b}\n{d}%'
+                    },
+                    labelLine: {
+                        show: shouldShowLabel,
+                        length: 8,
+                        length2: 8,
+                        smooth: true,
+                        lineStyle: {
+                            color: '#E4E7EB',
+                            width: 1
+                        }
+                    }
+                };
+            });
+
+            const sectorPalette = [
+                BRAND_COLORS.deepBlue,
+                BRAND_COLORS.teal,
+                BRAND_COLORS.amber,
+                BRAND_COLORS.greyPurple,
+                BRAND_COLORS.coral,
+                BRAND_COLORS.sage,
+                BRAND_COLORS.dataBlue,
+                BRAND_COLORS.greyBlue
+            ];
+
+            const option = {
+                backgroundColor: 'transparent',
+                color: sectorPalette,
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: '#FFFFFF',
+                    borderColor: BRAND_COLORS.gridBorder,
+                    borderWidth: 1,
+                    padding: [10, 14],
+                    textStyle: { color: BRAND_COLORS.textPrimary, fontSize: 13 },
+                    formatter: function (params) {
+                        if (!params.name) return '';
+                        const valStr = params.value ? params.value.toLocaleString() : '0';
+                        return `
+                            <div style="font-weight:600; font-size:14px; margin-bottom:4px; color:${BRAND_COLORS.textPrimary};">${params.name}</div>
+                            <div style="font-size:13px; color:${BRAND_COLORS.textSecondary};">消費金額：<span style="color:${BRAND_COLORS.textPrimary}; font-weight:600;">NT$ ${valStr} 萬元</span></div>
+                            <div style="font-size:13px; color:${BRAND_COLORS.textSecondary};">占總金額：<span style="color:${BRAND_COLORS.textPrimary}; font-weight:600;">${params.percent}%</span></div>
+                        `;
+                    }
+                },
+                legend: {
+                    type: 'scroll',
+                    orient: 'vertical',
+                    right: '2%',
+                    top: 'middle',
+                    bottom: '5%',
+                    textStyle: { color: BRAND_COLORS.textSecondary, fontSize: 12 },
+                    itemWidth: 12,
+                    itemHeight: 12,
+                    itemGap: 10,
+                    pageIconColor: BRAND_COLORS.deepBlue,
+                    pageIconInactiveColor: '#CBD5E1',
+                    pageTextStyle: { color: BRAND_COLORS.textSecondary, fontSize: 11 }
+                },
+                series: [
+                    {
+                        name: '產業占比',
+                        type: 'pie',
+                        radius: ['38%', '62%'],
+                        center: ['32%', '50%'],
+                        avoidLabelOverlap: true,
+                        labelLayout: {
+                            hideOverlap: true
+                        },
+                        cursor: 'pointer',
+                        itemStyle: {
+                            borderRadius: 2,
+                            borderColor: '#FFFFFF',
+                            borderWidth: 1.5
+                        },
+                        emphasis: {
+                            scale: true,
+                            scaleSize: 6,
+                            focus: 'self',
+                            itemStyle: {
+                                shadowBlur: 8,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        blur: {
+                            itemStyle: {
+                                opacity: 0.35
+                            },
+                            label: {
+                                opacity: 0.2
+                            }
+                        },
+                        data: pieData.length > 0 ? pieData : [{ name: '無資料', value: 0 }]
+                    }
+                ]
+            };
+
+            chartInstances.industry.setOption(option, true);
+        }
+
+        function renderDemographicChart(data) {
+            const ageGroups = ['20-29歲', '30-39歲', '40-49歲', '50-59歲', '60歲以上'];
+            const maleMap = {};
+            const femaleMap = {};
+
+            ageGroups.forEach(g => { maleMap[g] = 0; femaleMap[g] = 0; });
+
+            data.forEach(d => {
+                const age = d.年齡層 || '30-39歲';
+                const gender = d.性別 || '女';
+                const amt = Math.round((d.交易金額 || 0) / 10000);
+
+                if (gender.includes('男')) {
+                    maleMap[age] = (maleMap[age] || 0) + amt;
+                } else if (gender.includes('女')) {
+                    femaleMap[age] = (femaleMap[age] || 0) + amt;
+                }
+            });
+
+            const maleData = ageGroups.map(g => maleMap[g] || 0);
+            const femaleData = ageGroups.map(g => femaleMap[g] || 0);
+
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    backgroundColor: '#FFFFFF',
+                    borderColor: BRAND_COLORS.gridBorder,
+                    borderWidth: 1,
+                    padding: [8, 12],
+                    textStyle: { color: BRAND_COLORS.textPrimary, fontSize: 13 }
+                },
+                legend: { 
+                    data: ['女性消費', '男性消費'], 
+                    textStyle: { color: BRAND_COLORS.textSecondary, fontSize: 12 },
+                    top: '0%',
+                    icon: 'rect',
+                    itemWidth: 12,
+                    itemHeight: 12
+                },
+                grid: { left: '4%', right: '5%', bottom: '4%', top: '15%', containLabel: true },
+                xAxis: {
+                    type: 'category',
+                    data: ageGroups,
+                    axisLabel: { color: BRAND_COLORS.textSecondary, fontSize: 12 },
+                    axisLine: { lineStyle: { color: '#CBD5E1' } }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '萬元',
+                    nameTextStyle: { color: BRAND_COLORS.textSecondary, fontSize: 12 },
+                    axisLabel: { color: BRAND_COLORS.textSecondary, fontSize: 12 },
+                    splitLine: { lineStyle: { color: '#F0F4F8' } }
+                },
+                series: [
+                    {
+                        name: '女性消費',
+                        type: 'bar',
+                        stack: 'total',
+                        barWidth: '40%',
+                        itemStyle: { color: BRAND_COLORS.amber },
+                        data: femaleData
+                    },
+                    {
+                        name: '男性消費',
+                        type: 'bar',
+                        stack: 'total',
+                        barWidth: '40%',
+                        itemStyle: { color: BRAND_COLORS.deepBlue, borderRadius: [2, 2, 0, 0] },
+                        data: maleData
+                    }
+                ]
+            };
+
+            chartInstances.demographic.setOption(option, true);
+        }
+
+        function renderHeatmapChart(data) {
+            const cleanData = sanitizeDataForCharts(data, ['industry', 'district']);
+
+            const districts = Array.from(new Set(cleanData.map(d => d.地區))).filter(Boolean).slice(0, 8);
+            const industries = Array.from(new Set(cleanData.map(d => d.產業別))).filter(Boolean).slice(0, 6);
+
+            if (districts.length === 0) districts.push('信義區', '大安區', '中山區', '松山區', '內湖區');
+            if (industries.length === 0) industries.push('百貨購物', '餐飲美食', '住宿飯店', '交通運輸', '超級市場');
+
+            const heatMapValues = [];
+            let maxVal = 1;
+
+            districts.forEach((d, dIdx) => {
+                industries.forEach((i, iIdx) => {
+                    const match = cleanData.filter(item => item.地區 === d && item.產業別 === i);
+                    const sum = match.reduce((acc, curr) => acc + (curr.交易金額 || 0), 0);
+                    const val = Math.round(sum / 10000);
+                    if (val > maxVal) maxVal = val;
+                    heatMapValues.push([dIdx, iIdx, val]);
+                });
+            });
+
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    position: 'top',
+                    backgroundColor: '#FFFFFF',
+                    borderColor: BRAND_COLORS.gridBorder,
+                    borderWidth: 1,
+                    padding: [8, 12],
+                    textStyle: { color: BRAND_COLORS.textPrimary, fontSize: 13 },
+                    formatter: function (params) {
+                        return `<div style="font-size:14px; font-weight:600; margin-bottom:2px;">${districts[params.value[0]]} × ${industries[params.value[1]]}</div>金額: <span style="font-weight:600;">${params.value[2].toLocaleString()}</span> 萬元`;
+                    }
+                },
+                grid: { left: '12%', right: '5%', bottom: '22%', top: '8%' },
+                xAxis: {
+                    type: 'category',
+                    data: districts,
+                    axisLabel: { color: BRAND_COLORS.textSecondary, fontSize: 12, interval: 0, rotate: 15 },
+                    splitArea: { show: false }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: industries,
+                    axisLabel: { color: BRAND_COLORS.textSecondary, fontSize: 12 },
+                    splitArea: { show: false }
+                },
+                visualMap: {
+                    min: 0,
+                    max: maxVal || 1000,
+                    calculable: true,
+                    orient: 'horizontal',
+                    left: 'center',
+                    bottom: '0%',
+                    textStyle: { color: BRAND_COLORS.textSecondary, fontSize: 11 },
+                    inRange: {
+                        color: ['#F0F4F8', '#C3D5E5', '#78909C', '#4C78A8', '#274C77']
+                    }
+                },
+                series: [{
+                    name: '消費密度',
+                    type: 'heatmap',
+                    data: heatMapValues,
+                    cursor: 'pointer',
+                    label: { show: false },
+                    itemStyle: {
+                        borderColor: '#FFFFFF',
+                        borderWidth: 1
+                    }
+                }]
+            };
+
+            chartInstances.heatmap.setOption(option, true);
+        }
+
+        function renderRadarChart(data) {
+            const seriesData = [];
+
+            if (radarState.mode === 'all') {
+                Object.entries(radarProfiles).forEach(([name, profile]) => {
+                    seriesData.push({
+                        value: profile.value,
+                        name: name,
+                        itemStyle: { color: profile.color },
+                        lineStyle: { width: 2, color: profile.color },
+                        areaStyle: { color: profile.color, opacity: 0.08 },
+                        symbolSize: 6,
+                        emphasis: {
+                            lineStyle: { width: 3.5 },
+                            areaStyle: { opacity: 0.25 },
+                            itemStyle: { symbolSize: 9 }
+                        }
+                    });
+                });
+            } else {
+                const targetName = radarState.selectedDistrict;
+                const profile = radarProfiles[targetName] || radarProfiles['信義核心區'];
+                seriesData.push({
+                    value: profile.value,
+                    name: targetName,
+                    itemStyle: { color: profile.color },
+                    lineStyle: { width: 2.5, color: profile.color },
+                    areaStyle: { color: profile.color, opacity: 0.15 },
+                    symbolSize: 7,
+                    emphasis: {
+                        lineStyle: { width: 4 },
+                        areaStyle: { opacity: 0.3 },
+                        itemStyle: { symbolSize: 10 }
+                    }
+                });
+            }
+
+            if (radarState.showAvg) {
+                seriesData.push({
+                    value: cityAvgScores,
+                    name: '全市平均',
+                    itemStyle: { color: BRAND_COLORS.greyBlue },
+                    lineStyle: { type: 'dashed', width: 2, color: BRAND_COLORS.greyBlue },
+                    areaStyle: { color: BRAND_COLORS.greyBlue, opacity: 0.03 },
+                    symbolSize: 5
+                });
+            }
+
+            const legendNames = seriesData.map(s => s.name);
+
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: { 
+                    trigger: 'item',
+                    backgroundColor: '#FFFFFF',
+                    borderColor: BRAND_COLORS.gridBorder,
+                    borderWidth: 1,
+                    padding: [12, 16],
+                    textStyle: { color: BRAND_COLORS.textPrimary, fontSize: 13 },
+                    extraCssText: 'box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-radius: 6px;',
+                    formatter: function (params) {
+                        if (!params || !params.value) return '';
+                        const name = params.name;
+                        const vals = params.value;
+
+                        let html = `<div style="font-weight:700; font-size:15px; margin-bottom:8px; border-bottom:1px solid #E4E7EB; padding-bottom:6px; color:${BRAND_COLORS.textPrimary}">${name} 評估維度明細</div>`;
+                        html += `<table style="width:100%; border-collapse:collapse; font-size:13px; line-height:1.6;">`;
+                        html += `<tr style="color:#627D98; text-align:left; border-bottom:1px solid #F0F4F8;">
+                            <th style="padding:2px 10px 4px 0;">評估指標</th>
+                            <th style="padding:2px 10px 4px;">指標得分</th>
+                            <th style="padding:2px 10px 4px;">全市均值</th>
+                            <th style="padding:2px 0 4px 10px;">相較平均差異</th>
+                        </tr>`;
+
+                        radarIndicators.forEach((ind, idx) => {
+                            const score = vals[idx];
+                            const avg = cityAvgScores[idx];
+                            const diff = score - avg;
+                            let diffTag = '';
+
+                            if (diff > 0) {
+                                diffTag = `<span style="color:#2A9D8F; font-weight:600;">+${diff} 分 (高於平均)</span>`;
+                            } else if (diff < 0) {
+                                diffTag = `<span style="color:#D96C5F; font-weight:600;">${diff} 分 (低於平均)</span>`;
+                            } else {
+                                diffTag = `<span style="color:#78909C; font-weight:500;">持平</span>`;
+                            }
+
+                            html += `<tr>
+                                <td style="padding:4px 10px 4px 0; font-weight:600; color:#1F2933;">${ind.name}</td>
+                                <td style="padding:4px 10px; font-weight:700; color:#274C77;">${score} 分</td>
+                                <td style="padding:4px 10px; color:#627D98;">${avg} 分</td>
+                                <td style="padding:4px 0 4px 10px;">${diffTag}</td>
+                            </tr>`;
+                        });
+
+                        html += `</table>`;
+                        return html;
+                    }
+                },
+                legend: {
+                    data: legendNames,
+                    textStyle: { color: BRAND_COLORS.textSecondary, fontSize: 12 },
+                    bottom: '0%',
+                    icon: 'rect',
+                    itemWidth: 12,
+                    itemHeight: 12,
+                    itemGap: 16
+                },
+                radar: {
+                    indicator: radarIndicators,
+                    shape: 'polygon',
+                    splitNumber: 4,
+                    radius: '62%',
+                    center: ['50%', '46%'],
+                    axisName: { color: BRAND_COLORS.textPrimary, fontSize: 13, fontWeight: 600, padding: [3, 5] },
+                    splitLine: {
+                        lineStyle: {
+                            color: ['#E4E7EB', '#E4E7EB', '#CBD5E1', '#CBD5E1']
+                        }
+                    },
+                    splitArea: { show: false },
+                    axisLine: { lineStyle: { color: '#CBD5E1' } }
+                },
+                series: [
+                    {
+                        name: '行政區消費特徵評級',
+                        type: 'radar',
+                        data: seriesData
+                    }
+                ]
+            };
+
+            chartInstances.radar.setOption(option, true);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>醫病溝通個案分析儀表板 - 個案編號 2-03</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Noto Sans TC & Noto Serif TC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #F5F4F0;
+            color: #263238;
+            line-height: 1.75;
+            font-size: 16px;
+        }
+
+        h1, h2, h3, .serif-title {
+            font-family: 'Noto Serif TC', serif;
+        }
+
+        /* Color Tokens */
+        .bg-warm-gray { background-color: #F5F4F0; }
+        .bg-card-white { background-color: #FFFFFF; }
+        .text-slate-blue { color: #344B5E; }
+        .bg-slate-blue { background-color: #344B5E; }
+        .border-slate-blue { border-color: #344B5E; }
+        
+        .text-sage-green { color: #6F8F82; }
+        .bg-sage-green { background-color: #6F8F82; }
+        
+        .text-fog-blue { color: #7895A4; }
+        .bg-fog-blue { background-color: #7895A4; }
+        
+        .text-terracotta { color: #B56F55; }
+        .bg-terracotta { background-color: #B56F55; }
+        
+        .border-custom-divider { border-color: #D9DEDD; }
+
+        /* Navigation Tab Styles */
+        .tab-btn {
+            font-size: 16px;
+            font-weight: 500;
+            color: #66737A;
+            padding: 12px 20px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .tab-btn:hover {
+            color: #344B5E;
+            background-color: rgba(52, 75, 94, 0.04);
+        }
+        .tab-btn.active {
+            color: #344B5E;
+            border-bottom-color: #344B5E;
+            font-weight: 700;
+            background-color: #FFFFFF;
+        }
+
+        /* Card and Panel Styling */
+        .report-card {
+            background-color: #FFFFFF;
+            border: 1px solid #D9DEDD;
+            border-radius: 10px;
+            padding: 28px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            margin-bottom: 24px;
+        }
+
+        .badge-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Tooltip & Interactive Elements */
+        .verbatim-quote {
+            background-color: #F8F9FA;
+            border-left: 4px solid #7895A4;
+            padding: 14px 18px;
+            margin: 12px 0;
+            font-size: 15px;
+            color: #263238;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F5F4F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #7895A4;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Sticky Compact Header -->
+    <header class="sticky top-0 z-50 bg-white border-b border-[#D9DEDD] shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between py-3 gap-2 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-blue">醫病溝通個案分析儀表板</h1>
+                    <span class="badge-tag bg-[#EAEFF2] text-slate-blue">個案編號 2-03</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm sm:text-base">
+                    <span class="badge-tag bg-[#F9EBEA] text-terracotta font-semibold">
+                        <i class="fa-solid fa-triangle-exclamation mr-1">1.5</i> 目前狀態：胸部影像異常（尚未確診）
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <nav class="flex overflow-x-auto no-scrollbar gap-1 pt-1">
+                <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active">1. 個案概覽</button>
+                <button onclick="switchTab('timeline')" id="tab-timeline" class="tab-btn">2. 對話歷程</button>
+                <button onclick="switchTab('personas')" id="tab-personas" class="tab-btn">3. 人物需求與痛點</button>
+                <button onclick="switchTab('quality')" id="tab-quality" class="tab-btn">4. 溝通品質分析</button>
+                <button onclick="switchTab('recommendations')" id="tab-recommendations" class="tab-btn">5. 溝通改善建議</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- TAB 1: 個案概覽 -->
+        <section id="content-overview" class="tab-content block">
+            <!-- Executive Summary Header -->
+            <div class="report-card border-l-4 border-l-[#344B5E]">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-blue mb-3">個案溝通摘要</h2>
+                <p class="text-base sm:text-lg text-[#263238] leading-relaxed mb-4">
+                    本案例記錄一位 78 歲林伯伯因持續咳嗽、胸悶與體重減輕就診，門診胸部 X 光發現右肺陰影後，醫療團隊建議進一步進行胸部電腦斷層（CT）檢查。對話過程呈現病人對檢查設備密閉空間、侵入性打針及輻射風險的強烈焦慮，同時夾雜對成為子女經濟與照護負擔的隱憂。
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm sm:text-base pt-2 border-t border-[#D9DEDD]">
+                    <div><span class="font-bold text-slate-blue">對話總輪次：</span> 84 話輪</div>
+                    <div><span class="font-bold text-slate-blue">主要議題：</span> 電腦斷層恐懼、負擔憂慮、資訊過載</div>
+                    <div><span class="font-bold text-slate-blue">資料來源：</span> 門診醫病對話逐字稿 (編號 2-03)</div>
+                </div>
+            </div>
+
+            <!-- Quantitative Speaker Statistics -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+                <!-- Bar Chart: Speaker Turn Distribution -->
+                <div class="lg:col-span-7 report-card">
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-blue mb-4">對話發言輪次分佈</h3>
+                    <div class="h-64 relative">
+                        <canvas id="speakerTurnsChart"></canvas>
+                    </div>
+                    <p class="text-sm text-[#66737A] mt-4">
+                        * 計算方式：各角色發言話輪數 ÷ 總話輪數 (84 話輪)。醫師與護理師話輪合計占比約 53.6%，主導醫療資訊溝通結構。
+                    </p>
+                </div>
+
+                <!-- Status Overview Cards -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="report-card">
+                        <h3 class="text-xl font-bold text-slate-blue mb-2">主訴症狀與風險線索</h3>
+                        <ul class="list-disc list-inside space-y-2 text-base text-[#263238]">
+                            <li>慢性咳嗽持續超過三週</li>
+                            <li>自覺胸悶、呼吸不順</li>
+                            <li>近一個月體重無預期下降約 3 公斤</li>
+                            <li>門診胸部 X 光顯示右肺中葉陰影</li>
+                        </ul>
+                    </div>
+
+                    <div class="report-card">
+                        <h3 class="text-xl font-bold text-slate-blue mb-2">臨床決策進度</h3>
+                        <div class="space-y-2 text-base">
+                            <p><span class="badge-tag bg-[#E8F0EC] text-sage-green font-bold">已完成</span> 開放式焦慮探問、衛教說明</p>
+                            <p><span class="badge-tag bg-[#FFF3E0] text-[#E65100] font-bold">進行中</span> 排定抽血檢查（驗腎功能與血球）</p>
+                            <p><span class="badge-tag bg-[#F5F4F0] text-[#66737A] font-bold">待執行</span> 胸部電腦斷層（CT）排檢與報告回診</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: 對話歷程 -->
+        <section id="content-timeline" class="tab-content hidden">
+            <div class="report-card">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-2">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-blue">關鍵溝通對話歷程</h2>
+                        <p class="text-base text-[#66737A]">觀察對話過程中病人情緒張力、家屬資訊提問與醫療團隊同理引導之動態變化</p>
+                    </div>
+                    <span class="badge-tag bg-[#EAEFF2] text-slate-blue self-start sm:self-auto">話輪 #01 - #84</span>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="w-full h-[400px] my-6">
+                    <canvas id="dialogueTimelineChart"></canvas>
+                </div>
+
+                <!-- Key Milestones Detail -->
+                <div class="mt-8 border-t border-[#D9DEDD] pt-6">
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-blue mb-4">逐字稿關鍵時刻事件標籤</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="p-4 bg-[#F8F9FA] border border-[#D9DEDD] rounded-lg">
+                            <span class="font-bold text-terracotta text-sm">話輪 #08 - #12</span>
+                            <h4 class="font-bold text-base text-slate-blue mt-1">檢查恐懼爆發</h4>
+                            <p class="text-sm text-[#263238] mt-1">醫師建議 CT 檢查，伯伯立即表示：「要打針？躺進去像土窯一樣的東西？我不做！」</p>
+                        </div>
+
+                        <div class="p-4 bg-[#F8F9FA] border border-[#D9DEDD] rounded-lg">
+                            <span class="font-bold text-sage-green text-sm">話輪 #20 - #28</span>
+                            <h4 class="font-bold text-base text-slate-blue mt-1">開放探問與同理回應</h4>
+                            <p class="text-sm text-[#263238] mt-1">醫師問：「最擔心哪部分？」並肯定自主權：「我們會說明好處風險，做不做由你決定。」</p>
+                        </div>
+
+                        <div class="p-4 bg-[#F8F9FA] border border-[#D9DEDD] rounded-lg">
+                            <span class="font-bold text-fog-blue text-sm">話輪 #34 - #45</span>
+                            <h4 class="font-bold text-base text-slate-blue mt-1">家屬連珠炮提問</h4>
+                            <p class="text-sm text-[#263238] mt-1">女兒與兒子連續詢問排程、請假、自費項目與報告時間，造成資訊與決策過載。</p>
+                        </div>
+
+                        <div class="p-4 bg-[#F8F9FA] border border-[#D9DEDD] rounded-lg">
+                            <span class="font-bold text-terracotta text-sm">話輪 #65</span>
+                            <h4 class="font-bold text-base text-slate-blue mt-1">病人表達資訊過載</h4>
+                            <p class="text-sm text-[#263238] mt-1">伯伯直言：「夠了啦，你們一直講，我腦袋都亂了，我現在一句都沒聽懂。」</p>
+                        </div>
+
+                        <div class="p-4 bg-[#F8F9FA] border border-[#D9DEDD] rounded-lg">
+                            <span class="font-bold text-sage-green text-sm">話輪 #66 - #69</span>
+                            <h4 class="font-bold text-base text-slate-blue mt-1">執行 Teach-back 回述</h4>
+                            <p class="text-sm text-[#263238] mt-1">醫師請伯伯親自說明：「離開診間第一件事做什麼？」伯伯成功答出：「先去抽血。」</p>
+                        </div>
+
+                        <div class="p-4 bg-[#F8F9FA] border border-[#D9DEDD] rounded-lg">
+                            <span class="font-bold text-slate-blue text-sm">話輪 #76 - #84</span>
+                            <h4 class="font-bold text-base text-slate-blue mt-1">達成階段性共識</h4>
+                            <p class="text-sm text-[#263238] mt-1">護理師交付抽血單，約定下週回診看報告，並再次確認伯伯了解今日處置。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: 人物需求與痛點 -->
+        <section id="content-personas" class="tab-content hidden space-y-6">
+
+            <!-- Row 1: Patient (Lin Uncle) Full Width -->
+            <div class="report-card border-l-4 border-l-[#B56F55]">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-blue">林伯伯（78歲，主要病人）</h2>
+                        <p class="text-base text-[#66737A]">核心關切：身體自主權、檢查恐懼、疾病不確定性、怕成為子女負擔</p>
+                    </div>
+                    <span class="badge-tag bg-[#F9EBEA] text-terracotta font-bold">高焦慮 / 拒絕檢查傾向</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-base text-[#263238]">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-blue mb-2"><i class="fa-solid fa-triangle-exclamation mr-2 text-terracotta"></i>偵測到的痛點與顧慮</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>幽閉與疼痛恐懼：</strong>將 CT 機器想像成「土窯」，害怕密閉空間與打針疼痛（話輪 #12）。</li>
+                            <li><strong>家庭負擔焦慮：</strong>聽到家屬討論請假陪同與自費項目，擔心增加子女金錢與時間負擔。</li>
+                            <li><strong>資訊過載抗拒：</strong>當多方同時討論時感到混亂，直接表達「一句都沒聽懂」（話輪 #65）。</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-blue mb-2"><i class="fa-solid fa-quote-left mr-2 text-fog-blue"></i>逐字稿原句驗證</h3>
+                        <div class="verbatim-quote">
+                            「阿不就是要打針？還要躺進去那個圓圓大大像土窯一樣的東西？那很恐怖餒，密閉空間，我不想要做啦！」<br>
+                            <span class="text-xs text-[#66737A] text-right block mt-1">—— 話輪 #12 原文</span>
+                        </div>
+                        <div class="verbatim-quote">
+                            「夠了啦，你們一直講，我腦袋都亂了，我現在一句都沒聽懂。」<br>
+                            <span class="text-xs text-[#66737A] text-right block mt-1">—— 話輪 #65 原文</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Daughter & Son (2 Columns Desktop) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Daughter Card -->
+                <div class="report-card border-l-4 border-l-[#7895A4]">
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-blue mb-2">女兒（家屬 A）</h3>
+                    <p class="text-sm text-[#66737A] mb-4">關注焦點：掌握實際症狀嚴重度、安排陪診與請假流程</p>
+                    <div class="space-y-3 text-base">
+                        <p><strong>核心需求：</strong>希望能有明確的時間表，以便向公司請假並協調照護人力。</p>
+                        <p><strong>對話表現：</strong>急於了解流程細節，發言頻率高，連帶引發伯伯的認知負荷增加。</p>
+                        <div class="verbatim-quote">
+                            「醫師，如果要做電腦斷層，大概要排多久？我們要請假陪他，而且檢查完當天能知道結果嗎？」<br>
+                            <span class="text-xs text-[#66737A] text-right block mt-1">—— 話輪 #34 原文</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Son Card -->
+                <div class="report-card border-l-4 border-l-[#7895A4]">
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-blue mb-2">兒子（家屬 B）</h3>
+                    <p class="text-sm text-[#66737A] mb-4">關注焦點：延誤治療風險、是否有自費進階檢查與後續安排</p>
+                    <div class="space-y-3 text-base">
+                        <p><strong>核心需求：</strong>確認疾病不確定性，確保父親得到最適當的檢查，避免耽誤病情。</p>
+                        <p><strong>對話表現：</strong>關注檢查精準度與保險理賠可能，提問導向醫療決策效益。</p>
+                        <div class="verbatim-quote">
+                            「醫師，如果不做電腦斷層，還有別的檢查可以取代嗎？會不會耽誤到病情？」<br>
+                            <span class="text-xs text-[#66737A] text-right block mt-1">—— 話輪 #41 原文</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Medical Team Horizontal Block -->
+            <div class="report-card border-l-4 border-l-[#6F8F82]">
+                <h3 class="text-xl sm:text-2xl font-bold text-slate-blue mb-3">醫療團隊（主治醫師與專任護理師）</h3>
+                <p class="text-base text-[#263238] mb-4">
+                    醫療團隊在此案例中展現高度溝通覺察，透過開放式探問釐清伯伯的具體恐懼，適時中斷家屬的連續提問以減輕資訊負荷，並運用 Teach-back 確保病人離開診間前掌握核心下一步。
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm sm:text-base">
+                    <div class="bg-[#F8F9FA] p-4 rounded-lg">
+                        <span class="font-bold text-sage-green block mb-1">主治醫師策略：</span>
+                        開啟同理回應與自主權肯定（話輪 #20、#28），並在話輪 #50 主動叫停：「大家先等一下，我看伯伯眼神有點茫然，我們現在一次講太多事了。」
+                    </div>
+                    <div class="bg-[#F8F9FA] p-4 rounded-lg">
+                        <span class="font-bold text-sage-green block mb-1">護理師策略：</span>
+                        在診間後半段負責聚焦執行細節，協助引導伯伯理解抽血步驟與下週回診時間，降低複雜感。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: 溝通品質分析 -->
+        <section id="content-quality" class="tab-content hidden space-y-6">
+            <div class="report-card">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-blue mb-2">臨床溝通技巧質性與佐證分析</h2>
+                <p class="text-base text-[#66737A] mb-6">依據逐字稿實際話輪，針對六項核心醫病溝通指標進行事實歸納與質性分析</p>
+
+                <!-- Evidence Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm sm:text-base">
+                        <thead>
+                            <tr class="bg-[#F5F4F0] border-b-2 border-[#D9DEDD] text-slate-blue">
+                                <th class="p-3 sm:p-4 font-bold min-w-[140px]">溝通技巧指標</th>
+                                <th class="p-3 sm:p-4 font-bold min-w-[280px]">逐字稿具體佐證（含話輪）</th>
+                                <th class="p-3 sm:p-4 font-bold min-w-[240px]">質性分析與臨床效益</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#D9DEDD] text-[#263238]">
+                            <tr>
+                                <td class="p-3 sm:p-4 font-bold text-slate-blue">開放式探問</td>
+                                <td class="p-3 sm:p-4">
+                                    <span class="font-semibold text-terracotta">話輪 #20：</span>「伯伯，你拒絕得很快，我想先知道你最擔心的是哪一部分？」
+                                </td>
+                                <td class="p-3 sm:p-4">避免讓病人停留在非黑即白的反抗情緒，引導其說出真正的「打針與幽閉」恐懼。</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 sm:p-4 font-bold text-slate-blue">同理與情緒命名</td>
+                                <td class="p-3 sm:p-4">
+                                    <span class="font-semibold text-terracotta">話輪 #24：</span>「我聽懂了，你不是怕檢查本身，你是怕打針的痛，還有被困在狹窄機器的感覺，對不對？」
+                                </td>
+                                <td class="p-3 sm:p-4">精準精煉病人的困擾並予以命名，讓伯伯感覺被尊重與理解，顯著降低對立情緒。</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 sm:p-4 font-bold text-slate-blue">不確定性說明</td>
+                                <td class="p-3 sm:p-4">
+                                    <span class="font-semibold text-terracotta">話輪 #08：</span>「X 光看到陰影，不代表就是不好的東西，可能是舊發炎痕跡，需要 CT 來釐清。」
+                                </td>
+                                <td class="p-3 sm:p-4">釐清檢查目的為「排除風險」而非「宣判癌症」，平抑病人對未知病情的恐慌。</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 sm:p-4 font-bold text-slate-blue">分段提供資訊</td>
+                                <td class="p-3 sm:p-4">
+                                    <span class="font-semibold text-terracotta">話輪 #50：</span>「大家先停一下，我們一次講太多了。今天我們就先專心把抽血這件事講清楚。」
+                                </td>
+                                <td class="p-3 sm:p-4">及時察覺病人眼神茫然，及時切斷家屬的資訊過載，保護病人的認知承載力。</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 sm:p-4 font-bold text-slate-blue">Teach-back 回述確認</td>
+                                <td class="p-3 sm:p-4">
+                                    <span class="font-semibold text-terracotta">話輪 #66：</span>「伯伯，你用自己的話告訴我，今天離開診間後第一件要做什麼？」
+                                </td>
+                                <td class="p-3 sm:p-4">確認病人吸收度，伯伯於話輪 #69 正確回答：「先去抽血」，成功化解資訊混亂。</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 sm:p-4 font-bold text-slate-blue">自主權與共享決策</td>
+                                <td class="p-3 sm:p-4">
+                                    <span class="font-semibold text-terracotta">話輪 #28：</span>「我們會說明好處與風險，最後要做不要做，依然是由你決定。」
+                                </td>
+                                <td class="p-3 sm:p-4">重申醫療處置的選擇權在病人手上，減輕被強制推入檢查設備的失控感。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: 溝通改善建議 -->
+        <section id="content-recommendations" class="tab-content hidden space-y-8">
+            
+            <!-- Section 1: Effective Methods Applied -->
+            <div class="report-card">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-blue mb-4">1. 本案例已有效運用的溝通方法</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-base text-[#263238]">
+                    <div class="p-4 bg-[#E8F0EC] border border-[#6F8F82] rounded-lg">
+                        <span class="font-bold text-sage-green block mb-1">【話輪 20】開放式問題探問</span>
+                        <p>以「我想先知道你最擔心的是哪一部分」取代命令，成功將病人抗拒轉化為具體訴求說明。</p>
+                    </div>
+                    <div class="p-4 bg-[#E8F0EC] border border-[#6F8F82] rounded-lg">
+                        <span class="font-bold text-sage-green block mb-1">【話輪 24】承認害怕與同理命名</span>
+                        <p>直接說出「你是怕打針的痛與狹窄機器」，不以「這沒什麼好怕的」否認病人真實感受。</p>
+                    </div>
+                    <div class="p-4 bg-[#E8F0EC] border border-[#6F8F82] rounded-lg">
+                        <span class="font-bold text-sage-green block mb-1">【話輪 28】保留身體自主權</span>
+                        <p>明確表達「最後要做不要做依然由你決定」，奠定共享決策（SDM）的信任基礎。</p>
+                    </div>
+                    <div class="p-4 bg-[#E8F0EC] border border-[#6F8F82] rounded-lg">
+                        <span class="font-bold text-sage-green block mb-1">【話輪 50、66-69】資訊分段與 Teach-back</span>
+                        <p>主動中斷過載對話，引導伯伯回述「先去抽血」，確認資訊傳達無誤。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Areas for Improvement -->
+            <div class="report-card">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-blue mb-4">2. 仍可改善的溝通環節</h2>
+                <div class="space-y-4 text-base text-[#263238]">
+                    <div class="p-4 bg-[#FFF8F6] border-l-4 border-l-[#B56F55] rounded-r-lg">
+                        <h3 class="font-bold text-lg text-terracotta mb-1">家屬多頭提問引發病人焦慮（事實與詮釋）</h3>
+                        <p><strong>逐字稿事實：</strong>話輪 61–64 中，家屬連續提出排隊時間、請假、自費金額與護理安排等四個議題。</p>
+                        <p><strong>分析者詮釋：</strong>過多的旁支資訊會讓焦慮中的高齡病人誤以為手續極度繁瑣，加深「自己成為子女負擔」的罪惡感，進而引發話輪 65 的情緒爆發。</p>
+                    </div>
+                    <div class="p-4 bg-[#FFF8F6] border-l-4 border-l-[#B56F55] rounded-r-lg">
+                        <h3 class="font-bold text-lg text-terracotta mb-1">風險概念未能一次完全釐清</h3>
+                        <p><strong>逐字稿事實：</strong>醫師說明照 X 光看到陰影需要做 CT 釐清，但伯伯中期仍多次詢問是不是「罹癌」。</p>
+                        <p><strong>分析者詮釋：</strong>「排除腫瘤」在醫護腦中是中性檢查，但在病人耳中常直接等同於「確定得了癌症」，需要多輪重申「檢查是為了安心」的正面意義。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Original vs Suggested Response -->
+            <div class="report-card">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-blue mb-4">3. 原始情境與建議回應對照表</h2>
+                <div class="space-y-4">
+                    <!-- Scenario Card 1 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-[#D9DEDD] rounded-lg p-4 bg-[#F8F9FA]">
+                        <div>
+                            <span class="badge-tag bg-[#EAEFF2] text-slate-blue mb-2">原始情境（話輪 65）</span>
+                            <div class="verbatim-quote">
+                                「夠了啦，你們一直講，我腦袋都亂了，我現在一句都沒聽懂。」
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge-tag bg-[#E8F0EC] text-sage-green mb-2">建議處理方式（建議說法）</span>
+                            <p class="text-base text-[#263238] mt-2">
+                                <strong>醫療團隊建議回應：</strong><br>
+                                「伯伯對不起，是我們一次講太多了。您現在只要記得一件事：今天我們只做『抽血』，其他的等抽血報告出來我們再來慢慢討論，完全不用急。」
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Scenario Card 2 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-[#D9DEDD] rounded-lg p-4 bg-[#F8F9FA]">
+                        <div>
+                            <span class="badge-tag bg-[#EAEFF2] text-slate-blue mb-2">原始情境（話輪 34）</span>
+                            <div class="verbatim-quote">
+                                女兒急切詢問：「醫師，電腦斷層要排多久？我們要請假陪他，當天能知道結果嗎？」
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge-tag bg-[#E8F0EC] text-sage-green mb-2">建議處理方式（建議說法）</span>
+                            <p class="text-base text-[#263238] mt-2">
+                                <strong>醫療團隊建議回應：</strong><br>
+                                「家屬關心心切我了解。為了不讓伯伯太累，我們把流程簡化成兩步：今天先完成抽血，下週看報告時我們再把排檢日期一次對好，讓你們方便請假。」
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Follow-up Checklist -->
+            <div class="report-card">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-blue mb-4">4. 臨床門診後續追蹤清單</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-base text-[#263238]">
+                    <label class="flex items-start gap-3 p-3 border border-[#D9DEDD] rounded-lg cursor-pointer hover:bg-[#F8F9FA]">
+                        <input type="checkbox" checked class="mt-1 w-4 h-4 text-slate-blue rounded">
+                        <span>完成門診抽血，確認腎功能（Cre/eGFR）與血球數據。</span>
+                    </label>
+                    <label class="flex items-start gap-3 p-3 border border-[#D9DEDD] rounded-lg cursor-pointer hover:bg-[#F8F9FA]">
+                        <input type="checkbox" class="mt-1 w-4 h-4 text-slate-blue rounded">
+                        <span>安排胸部電腦斷層（CT）檢查時間與預備衛教說明。</span>
+                    </label>
+                    <label class="flex items-start gap-3 p-3 border border-[#D9DEDD] rounded-lg cursor-pointer hover:bg-[#F8F9FA]">
+                        <input type="checkbox" class="mt-1 w-4 h-4 text-slate-blue rounded">
+                        <span>提供 CT 檢查環境圖卡或引導說明，降低密閉空間焦慮。</span>
+                    </label>
+                    <label class="flex items-start gap-3 p-3 border border-[#D9DEDD] rounded-lg cursor-pointer hover:bg-[#F8F9FA]">
+                        <input type="checkbox" class="mt-1 w-4 h-4 text-slate-blue rounded">
+                        <span>一週內安排抽血報告回診，重申伯伯之處置選擇權。</span>
+                    </label>
+                    <label class="flex items-start gap-3 p-3 border border-[#D9DEDD] rounded-lg cursor-pointer hover:bg-[#F8F9FA]">
+                        <input type="checkbox" class="mt-1 w-4 h-4 text-slate-blue rounded">
+                        <span>評估與衛教警示症狀：胸痛加劇、呼吸困難、咳血與體重劇降。</span>
+                    </label>
+                    <label class="flex items-start gap-3 p-3 border border-[#D9DEDD] rounded-lg cursor-pointer hover:bg-[#F8F9FA]">
+                        <input type="checkbox" class="mt-1 w-4 h-4 text-slate-blue rounded">
+                        <span>與女兒、兒子溝通陪診分工，減輕林伯伯心理負擔感。</span>
+                    </label>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-[#D9DEDD] py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-[#66737A]">
+            <p>醫病溝通大數據與質量化深度分析報告 — 個案編號 2-03</p>
+            <p class="mt-1 text-xs">聲明：本儀表板內容僅供醫療品質改善與醫病溝通教學研究使用，非個別臨床預測模型。</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab Switching Function
+        function switchTab(tabId) {
+            const tabs = ['overview', 'timeline', 'personas', 'quality', 'recommendations'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const content = document.getElementById(`content-${t}`);
+                if (t === tabId) {
+                    btn.classList.add('active');
+                    content.classList.remove('hidden');
+                    content.classList.add('block');
+                } else {
+                    btn.classList.remove('active');
+                    content.classList.remove('block');
+                    content.classList.add('hidden');
+                }
+            });
+        }
+
+        // Initialize Charts safely after DOM Content is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if Chart.js loaded properly
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js library failed to load.');
+                return;
+            }
+
+            // Global Chart Defaults
+            Chart.defaults.font.family = "'Noto Sans TC', sans-serif";
+            Chart.defaults.color = '#263238';
+
+            // 1. Speaker Turns Chart (Horizontal Bar)
+            const ctxSpeaker = document.getElementById('speakerTurnsChart');
+            if (ctxSpeaker) {
+                new Chart(ctxSpeaker.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['主治醫師', '林伯伯 (病人)', '女兒 (家屬A)', '護理師', '兒子 (家屬B)'],
+                        datasets: [{
+                            label: '對話話輪數',
+                            data: [33, 22, 14, 12, 3],
+                            backgroundColor: ['#344B5E', '#B56F55', '#7895A4', '#6F8F82', '#A3B899'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = 84;
+                                        const val = context.raw;
+                                        const pct = ((val / total) * 100).toFixed(1);
+                                        return ` 話輪數: ${val} 次 (${pct}%)`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                min: 0,
+                                max: 40,
+                                ticks: { font: { size: 13 } },
+                                grid: { color: '#EAEFF2' }
+                            },
+                            y: {
+                                ticks: { font: { size: 14, weight: 'bold' } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 2. Dialogue Timeline Chart (Line Chart)
+            const ctxTimeline = document.getElementById('dialogueTimelineChart');
+            if (ctxTimeline) {
+                new Chart(ctxTimeline.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: [
+                            '話輪 #01-#15\n(症狀主訴與 CT 建議)', 
+                            '話輪 #16-#30\n(伯伯表達抗拒恐懼)', 
+                            '話輪 #31-#45\n(家屬連珠炮提問)', 
+                            '話輪 #46-#60\n(醫師介入叫停分段)', 
+                            '話輪 #61-#75\n(情緒過載與 Teach-back)', 
+                            '話輪 #76-#84\n(達成抽血排檢共識)'
+                        ],
+                        datasets: [
+                            {
+                                label: '病人情緒張力/抗拒',
+                                data: [35, 85, 70, 45, 90, 20],
+                                borderColor: '#B56F55',
+                                backgroundColor: 'rgba(181, 111, 85, 0.08)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.3
+                            },
+                            {
+                                label: '家屬資訊詢問頻率',
+                                data: [20, 30, 95, 40, 60, 25],
+                                borderColor: '#7895A4',
+                                borderWidth: 2,
+                                borderDash: [4, 4],
+                                tension: 0.3
+                            },
+                            {
+                                label: '醫療團隊同理引導強度',
+                                data: [30, 60, 40, 85, 95, 80],
+                                borderColor: '#6F8F82',
+                                borderWidth: 3,
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: { font: { size: 14 } }
+                            },
+                            tooltip: {
+                                titleFont: { size: 15, weight: 'bold' },
+                                bodyFont: { size: 14 },
+                                padding: 12,
+                                callbacks: {
+                                    afterBody: function(context) {
+                                        const idx = context[0].dataIndex;
+                                        const events = [
+                                            '話輪 #08: 說明 X 光右肺陰影，建議做 CT 檢查',
+                                            '話輪 #12: 伯伯直言「像土窯一樣，打針很痛我不做」',
+                                            '話輪 #34: 女兒急詢排程請假，家屬焦慮升高',
+                                            '話輪 #50: 醫師察覺伯伯眼神茫然，及時暫停對話',
+                                            '話輪 #65: 伯伯表達「一句都沒聽懂」，醫師隨即執行 Teach-back',
+                                            '話輪 #69: 伯伯順利答出「先去抽血」，達成共識'
+                                        ];
+                                        return '\n關鍵事件: ' + events[idx];
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                min: 0,
+                                max: 100,
+                                ticks: {
+                                    font: { size: 13 },
+                                    callback: function(val) {
+                                        if (val === 20) return '低';
+                                        if (val === 50) return '中';
+                                        if (val === 85) return '高';
+                                        return '';
+                                    }
+                                },
+                                grid: { color: '#EAEFF2' }
+                            },
+                            x: {
+                                ticks: { font: { size: 13 } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
