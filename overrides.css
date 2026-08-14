@@ -1078,3 +1078,11 @@ nav a {
 /* 將競賽資訊與獎項之間的分隔線置於兩段文字的視覺中點。 */
 .awards.awards-showcase .award-card-meta { padding-bottom: 0; }
 .awards.awards-showcase .award-card .award-copy { padding-top: .9rem; }
+
+/* 最高優先序：首頁專案卡的成果描述絕不拆行。 */
+.hero-domains b {
+  font-size: clamp(.68rem, .8vw, .78rem) !important;
+  line-height: 1.45 !important;
+  letter-spacing: -.045em !important;
+  white-space: nowrap !important;
+}
