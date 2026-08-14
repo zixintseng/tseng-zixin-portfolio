@@ -1116,3 +1116,8 @@ nav a {
   font: 700 .72rem/1.35 var(--display);
   letter-spacing: 0;
 }
+
+@media (min-width: 801px) {
+  .awards.awards-showcase .award-featured { grid-template-columns: minmax(22rem, .52fr) minmax(0, 1fr); }
+  .awards.awards-showcase .award-org { white-space: nowrap; }
+}
