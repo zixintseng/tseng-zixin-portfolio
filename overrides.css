@@ -1120,4 +1120,5 @@ nav a {
 @media (min-width: 801px) {
   .awards.awards-showcase .award-featured { grid-template-columns: minmax(22rem, .52fr) minmax(0, 1fr); }
   .awards.awards-showcase .award-org { white-space: nowrap; }
+  .awards.awards-showcase .award-card-meta .award-org { transform: translateY(-.12rem); }
 }
