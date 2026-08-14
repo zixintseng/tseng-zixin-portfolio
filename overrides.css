@@ -1093,3 +1093,17 @@ nav a {
   letter-spacing: -.06em !important;
   white-space: nowrap !important;
 }
+
+/* 寬螢幕將導覽列延伸至左側版面，讓三組技術內容能放大但維持單行。 */
+@media (min-width: 1200px) {
+  .hero-domains {
+    max-width: 900px;
+    grid-template-columns: 1.04fr 1.12fr 1fr;
+  }
+
+  .hero-domains a { padding-right: .55rem; }
+  .hero-domains a + a { padding-left: .55rem; }
+}
+
+.hero-domains b { font-size: clamp(.68rem, 1.08vw, .88rem) !important; }
+.hero-domains span { font-size: clamp(.68rem, .98vw, .82rem) !important; }
